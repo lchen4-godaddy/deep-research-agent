@@ -6,6 +6,9 @@
 # System and user-specific files
 HOME/
 
+# Reference files from original project
+References/
+
 # Python
 __pycache__/
 *.py[cod]
