@@ -3,6 +3,9 @@
 .env.local
 .env.*.local
 
+# System and user-specific files
+HOME/
+
 # Python
 __pycache__/
 *.py[cod]
