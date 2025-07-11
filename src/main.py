@@ -12,9 +12,9 @@ from .chatbot_manager import ChatbotManager
 
 async def main() -> None:
     print("Welcome to my test chatbot. What would you like to talk about?")
-    query = input("-> ")
+    #query = input("-> ")
     # await ResearchManager().run(query)
-    await ChatbotManager().run(query)
+    await ChatbotManager().run()
 
 
 if __name__ == "__main__":

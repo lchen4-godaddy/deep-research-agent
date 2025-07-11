@@ -11,12 +11,28 @@ class ChatbotManager:
         # self.console = Console()
         # self.printer = Printer(self.console)
 
-    async def run(self, query: str) -> None:
+    async def run(self) -> None:
         session = SQLiteSession("chatbot_session")
 
-        chatbot_response = await Runner.run(chatbot_agent, query, session=session)
-        print(chatbot_response.final_output)
+        while True:
+            try:
+                user_input = input("\nYou: ").strip()
 
-        query = input("-> ")
-        chatbot_response = await Runner.run(chatbot_agent, query, session=session)
-        print(chatbot_response.final_output)
+                if user_input.lower() in ("exit", "quit", "bye"):
+                    print("\nGoodbye!")
+                    break
+                
+                if not user_input:
+                    continue
+                
+                
+                chatbot_response = await Runner.run(chatbot_agent, user_input, session=session)
+                print(chatbot_response.final_output)
+
+                
+            except KeyboardInterrupt:
+                print("\nGoodbye!")
+                break
+            except Exception as e:
+                print(f"❌ Error: {e}")
+                print("Continuing loop...")
