@@ -7,11 +7,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from .manager import ResearchManager
+from .chatbot_manager import ChatbotManager
 
 
 async def main() -> None:
-    query = input("What would you like to research? ")
-    await ResearchManager().run(query)
+    print("Welcome to my test chatbot. What would you like to talk about?")
+    query = input("-> ")
+    # await ResearchManager().run(query)
+    await ChatbotManager().run(query)
 
 
 if __name__ == "__main__":
