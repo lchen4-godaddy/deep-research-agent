@@ -55,8 +55,6 @@ class Manager:
                                     print(f"🔧 Tool Called Event Detected!")
                                 elif event.name == "tool_output":
                                     print(f"📤 Tool Output Event Detected!")
-                                    # Print the actual tool output data
-                                    print(f"🔍 Tool Output Item: {event.item}")
                                 elif event.name == "message_output_created":
                                     print(f"💬 Message Output Event Detected!")
                                 elif event.name == "handoff_occured":
@@ -64,19 +62,18 @@ class Manager:
                                     if hasattr(event.item, 'target_agent') and hasattr(event.item, 'source_agent'):
                                         source_agent = event.item.source_agent.name
                                         target_agent = event.item.target_agent.name
-                                        print(f"🔄 Agent Handoff: {source_agent} → {target_agent}")
+                                        print(f"🤝 Agent Handoff: {source_agent} → {target_agent}")
                                         current_agent = target_agent
                                         print(f"🤖 Current Agent: {current_agent}")
                                     else:
                                         print(f"❌ No target_agent or source_agent attribute found in handoff event")
                                 elif event.name == "handoff_requested":
                                     # Show when handoff is requested
-                                    print(f"📤 Handoff Requested: {current_agent}")
+                                    print(f"❓ Handoff Requested: {current_agent}")
                             elif event.type == "final_output":
                                 print(f"🤖 Final Output: {event.item}")
                 except asyncio.TimeoutError:
                     print(f"⏰ Timeout: Agent processing took too long (>2 minutes)")
-                    print(f"📋 Final Agent Output: {result.final_output}")
                     continue
                 
                 # Debug: Show session memory contents
@@ -90,7 +87,7 @@ class Manager:
                     tool_outputs = await session.get_all_tool_outputs()
                     if tool_outputs:  # Only show if there are tool outputs
                         for tool_name, data in tool_outputs.items():
-                            print(f"🔧 Stored: {tool_name} - {str(data)[:50]}...")
+                            print(f"🔧 Stored: {tool_name} - {str(data)}")
                     else:
                         print(f"🔧 No stored tool outputs")
                     
@@ -100,8 +97,13 @@ class Manager:
                         for item in result.new_items:
                             if hasattr(item, 'type') and item.type == 'tool_call_output_item':
                                 if hasattr(item, 'output') and hasattr(item.output, 'idea'):
-                                    print(f"🔧 Stored: prewrite_tool - {str(item.output)[:50]}...")
+                                    print(f"🔧 Stored: prewrite_tool")
+                                    print(f"   Content: {item.output}")
                                     await session.store_tool_output("prewrite_tool", item.output)
+                                elif hasattr(item, 'output') and hasattr(item.output, 'searches'):
+                                    print(f"🔧 Stored: search_plan_tool")
+                                    print(f"   Content: {item.output}")
+                                    await session.store_tool_output("search_plan_tool", item.output)
 
                 # Print the final result for completeness
                 print(f"\n✅ Final Agent Output: {result.final_output}")

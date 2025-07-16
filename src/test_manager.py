@@ -64,7 +64,6 @@ class TestManager:
                                 print(f"🤖 Final Output: {event.item}")
                 except asyncio.TimeoutError:
                     print(f"⏰ Timeout: Agent processing took too long (>2 minutes)")
-                    print(f"📋 Final Agent Output: {result.final_output}")
                     continue
                 
                 # Debug: Show session memory contents
