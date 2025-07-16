@@ -1,7 +1,6 @@
-from pydantic import BaseModel, Field
-from typing import Dict, Any, List
+from pydantic import BaseModel
 
-from agents import Agent, Runner, FunctionTool, function_tool, SQLiteSession, RunContextWrapper
+from agents import Agent, Runner, function_tool, RunContextWrapper
 from ..custom_session import CustomSession
 
 PREPLAN_AGENT_PROMPT = """
@@ -19,6 +18,7 @@ PREPLAN_AGENT_PROMPT = """
     IMPORTANT RULES:
     1. Only use the prewrite_tool once you have gotten permission from the user to proceed with a pre-write or modify the existing one.
     2. If the user asks to "see" or "get" the pre-write, retrieve it from the session data - DO NOT call the tool again.
+      a. You may only format the pre-write in a way that is easy to read and understand. Do not summarize or add any additional information.
     Your objective is to ensure all essential background information is gathered and validated by the user before moving to search planning.
 
 """
@@ -29,8 +29,8 @@ PREWRITER_PROMPT = """
 
     PreWrite structure:
     - idea: str (keep it concise)
-    - context: List[ContextItem] (e.g. location: San Francisco, industry: cosmetics, etc.)
-    - user_requested_research_areas: List[str] (e.g. market research, business model, etc.)
+    - context: list[ContextItem] (e.g. location: San Francisco, industry: cosmetics, etc.)
+    - user_requested_research_areas: list[str] (e.g. market research, business model, etc.)
 
     ContextItem structure:
     - type: str (e.g. location, industry, etc.)
@@ -49,25 +49,26 @@ class ContextItem(BaseModel):
 class PreWrite(BaseModel):
     idea: str
     """The main business or product idea"""
-    context: List[ContextItem]
+    context: list[ContextItem]
     """User-provided context for the purpose of the research, business context, etc."""
-    user_requested_research_areas: List[str]
+    user_requested_research_areas: list[str]
     """List of research areas requested by user"""
 
-prewriter_agent = Agent(
+prewriter_subagent = Agent(
     name="PreWriterSubAgent",
     instructions=PREWRITER_PROMPT,
     output_type=PreWrite,
 )
 
 @function_tool
-async def prewrite_tool(context: RunContextWrapper[SQLiteSession], user_input: str) -> PreWrite:
-    """Create a pre-write for the user's business idea."""
+async def prewrite_tool(context: RunContextWrapper[CustomSession]) -> PreWrite:
+    """Create a pre-write for the user's business idea using session context."""
     # Get the session from the context
     session = context.context
     
     # Run the prewriter agent with session context
-    prewrite = await Runner.run(prewriter_agent, user_input, session=session)
+    # The session contains all the conversation history needed
+    prewrite = await Runner.run(prewriter_subagent, "Create or modify a pre-write based on the conversation context", session=session)
     return prewrite.final_output
 
 

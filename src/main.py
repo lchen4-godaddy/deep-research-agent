@@ -12,7 +12,7 @@ from .manager import Manager
 
 
 async def main() -> None:
-    print("Welcome to my test chatbot. What would you like to talk about?")
+    print("Welcome to the Deep Research Assistant for business development. What business or product idea do you have in mind?")
     # query = input("-> ")
     # await ResearchManager().run(query)
     # await ChatbotManager().run()
