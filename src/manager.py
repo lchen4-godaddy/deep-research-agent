@@ -104,6 +104,24 @@ class Manager:
                                     print(f"🔧 Stored: search_plan_tool")
                                     print(f"   Content: {item.output}")
                                     await session.store_tool_output("search_plan_tool", item.output)
+                                elif hasattr(item, 'output') and hasattr(item.output, 'executive_summary') and hasattr(item.output, 'key_findings'):
+                                    print(f"🔧 Stored: simple_report_tool")
+                                    print(f"   Executive Summary: {item.output.executive_summary[:100]}...")
+                                    await session.store_tool_output("simple_report_tool", item.output)
+                                elif hasattr(item, 'output') and hasattr(item.output, 'executive_summary') and hasattr(item.output, 'key_insights'):
+                                    print(f"🔧 Stored: research_report_tool")
+                                    print(f"   Executive Summary: {item.output.executive_summary[:100]}...")
+                                    await session.store_tool_output("research_report_tool", item.output)
+                                elif hasattr(item, 'output') and isinstance(item.output, str) and len(item.output) > 50:
+                                    # Likely research_tool output (string research summary)
+                                    print(f"🔧 Stored: research_tool")
+                                    print(f"   Research Summary: {item.output[:100]}...")
+                                    await session.store_tool_output("research_tool", item.output)
+                                else:
+                                    # Generic fallback for any other tool output
+                                    print(f"🔧 Stored: unknown_tool")
+                                    print(f"   Content: {str(item.output)[:100]}...")
+                                    await session.store_tool_output("unknown_tool", item.output)
 
                 # Print the final result for completeness
                 print(f"\n✅ Final Agent Output: {result.final_output}")
