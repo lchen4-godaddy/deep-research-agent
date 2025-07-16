@@ -1,119 +1,88 @@
-from __future__ import annotations
-
 import asyncio
-import time
+import json
 
-from rich.console import Console
+from agents import Runner, SQLiteSession, RunItemStreamEvent
 
-from agents import Runner, custom_span, gen_trace_id, trace
+from .custom_session import CustomSession
+from .agents.preplan_agent import preplan_agent
 
-from .agents.planner_agent import WebSearchItem, WebSearchPlan, planner_agent
-from .agents.search_agent import search_agent
-from .agents.writer_agent import ReportData, writer_agent
-from .printer import Printer
+class Manager:
+    # def __init__(self):
+        # self.console = Console()
+        # self.printer = Printer(self.console)
 
+    async def run(self) -> None:
+        session = CustomSession("deep_research_session")
+        
+        while True:
+            try:
+                user_input = input("\n👤 User: ").strip()
 
-class ResearchManager:
-    def __init__(self):
-        self.console = Console()
-        self.printer = Printer(self.console)
+                if user_input.lower() in ("exit", "quit", "bye"):
+                    print("\nGoodbye!")
+                    break
+                
+                if not user_input:
+                    continue
+                
+                # chatbot_response = await Runner.run(preplan_agent, user_input, session=session)
+                # print(chatbot_response.final_output)
 
-    async def run(self, query: str) -> None:
-        trace_id = gen_trace_id()
-        with trace("Research trace", trace_id=trace_id):
-            self.printer.update_item(
-                "trace_id",
-                f"View trace: https://platform.openai.com/traces/trace?trace_id={trace_id}",
-                is_done=True,
-                hide_checkmark=True,
-            )
+                # history = await session.get_items()
+                # print(history)
 
-            self.printer.update_item(
-                "starting",
-                "Starting research...",
-                is_done=True,
-                hide_checkmark=True,
-            )
-            search_plan = await self._plan_searches(query)
-            search_results = await self._perform_searches(search_plan)
-            report = await self._write_report(query, search_results)
+                # Use streaming to capture tool outputs and agent responses
+                result = Runner.run_streamed(preplan_agent, user_input, session=session)
+                async for event in result.stream_events():
+                    # Skip raw response events to reduce console noise
+                    if event.type == "raw_response_event":
+                        continue
+                    
+                    # Debug: Print all events to see what's happening
+                    print(f"\n🔍 Event: {event.type} - {getattr(event, 'name', 'N/A')}")
+                    
+                    if event.type == "run_item_stream_event":
+                        if event.name == "tool_called":
+                            print(f"🔧 Tool Called Event Detected!")
+                        elif event.name == "tool_output":
+                            print(f"📤 Tool Output Event Detected!")
+                            # Print the actual tool output data
+                            print(f"🔍 Tool Output Item: {event.item}")
+                        elif event.name == "message_output_created":
+                            print(f"💬 Message Output Event Detected!")
+                    elif event.type == "final_output":
+                        print(f"\n🤖 Final Output: {event.item}")
+                
+                # Also print the final result for completeness
+                print(f"\n📋 Final Agent Output: {result.final_output}")
+                
+                # Debug: Show session memory contents
+                print(f"\n🔍 Session Memory Contents:")
+                session_items = await session.get_items()
+                for i, item in enumerate(session_items[-5:]):  # Show last 5 items
+                    print(f"  {i+1}. {type(item).__name__}: {str(item)[:100]}...")
+                
+                if isinstance(session, CustomSession):
+                    # Debug: Show stored tool outputs
+                    print(f"\n🔧 Stored Tool Outputs:")
+                    tool_outputs = await session.get_all_tool_outputs()
+                    for tool_name, data in tool_outputs.items():
+                        print(f"  {tool_name}: {data}")
+                    
+                    # Try to store the tool output manually if we can detect it
+                    # Look for tool output events in the stream
+                    if hasattr(result, 'new_items'):
+                        for item in result.new_items:
+                            if hasattr(item, 'type') and item.type == 'tool_call_output_item':
+                                if hasattr(item, 'output') and hasattr(item.output, 'idea'):
+                                    print(f"🔧 Detected prewrite tool output, storing...")
+                                    await session.store_tool_output("prewrite_tool", item.output)
+                                    print(f"✅ Stored prewrite tool output")
 
-            final_report = f"Report summary\n\n{report.short_summary}"
-            self.printer.update_item("final_report", final_report, is_done=True)
-
-            self.printer.end()
-
-        print("\n\n=====REPORT=====\n\n")
-        print(f"Report: {report.markdown_report}")
-        print("\n\n=====FOLLOW UP QUESTIONS=====\n\n")
-        follow_up_questions = "\n".join(report.follow_up_questions)
-        print(f"Follow up questions: {follow_up_questions}")
-
-    async def _plan_searches(self, query: str) -> WebSearchPlan:
-        self.printer.update_item("planning", "Planning searches...")
-        result = await Runner.run(
-            planner_agent,
-            f"Query: {query}",
-        )
-        self.printer.update_item(
-            "planning",
-            f"Will perform {len(result.final_output.searches)} searches",
-            is_done=True,
-        )
-        return result.final_output_as(WebSearchPlan)
-
-    async def _perform_searches(self, search_plan: WebSearchPlan) -> list[str]:
-        with custom_span("Search the web"):
-            self.printer.update_item("searching", "Searching...")
-            num_completed = 0
-            tasks = [asyncio.create_task(self._search(item)) for item in search_plan.searches]
-            results = []
-            for task in asyncio.as_completed(tasks):
-                result = await task
-                if result is not None:
-                    results.append(result)
-                num_completed += 1
-                self.printer.update_item(
-                    "searching", f"Searching... {num_completed}/{len(tasks)} completed"
-                )
-            self.printer.mark_item_done("searching")
-            return results
-
-    async def _search(self, item: WebSearchItem) -> str | None:
-        input = f"Search term: {item.query}\nReason for searching: {item.reason}"
-        try:
-            result = await Runner.run(
-                search_agent,
-                input,
-            )
-            return str(result.final_output)
-        except Exception:
-            return None
-
-    async def _write_report(self, query: str, search_results: list[str]) -> ReportData:
-        self.printer.update_item("writing", "Thinking about report...")
-        input = f"Original query: {query}\nSummarized search results: {search_results}"
-        result = Runner.run_streamed(
-            writer_agent,
-            input,
-        )
-        update_messages = [
-            "Thinking about report...",
-            "Planning report structure...",
-            "Writing outline...",
-            "Creating sections...",
-            "Cleaning up formatting...",
-            "Finalizing report...",
-            "Finishing report...",
-        ]
-
-        last_update = time.time()
-        next_message = 0
-        async for _ in result.stream_events():
-            if time.time() - last_update > 5 and next_message < len(update_messages):
-                self.printer.update_item("writing", update_messages[next_message])
-                next_message += 1
-                last_update = time.time()
-
-        self.printer.mark_item_done("writing")
-        return result.final_output_as(ReportData)
+                
+            except KeyboardInterrupt:
+                print("\nGoodbye!")
+                break
+            except Exception as e:
+                print(f"❌ Error: {e}")
+                print("Continuing loop...")

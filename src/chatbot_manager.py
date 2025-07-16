@@ -29,6 +29,9 @@ class ChatbotManager:
                 chatbot_response = await Runner.run(chatbot_agent, user_input, session=session)
                 print(chatbot_response.final_output)
 
+                history = await session.get_items()
+                print(history)
+
                 
             except KeyboardInterrupt:
                 print("\nGoodbye!")

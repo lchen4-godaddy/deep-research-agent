@@ -1,6 +1,29 @@
 from agents import Agent
 
+from .clarification_agent import clarification_agent
+from .preplan_agent import preplan_agent
+from .search_plan_agent import search_plan_agent
+from .research_agent import research_agent
+
 PROMPT = """
+    You are the Triage Agent in a multi-agent deep research assistant.
+    Your job is to evaluate each user input and determine the appropriate agent to handoff the task to.
+    
+    Guidelines:
+    - Pseudo-workflow: Context Gathering -> Search Plan Review -> Research Review -> Report Generation
+    - To create an agentic experience, instead of using a rigid workflow, the user should be able to backtrack to a previous stage if they want to change something.
+    - The user should not be able to skip to a later stage without going through the previous stages.
+    - Make sure to get user validation at each stage before proceeding to the next stage.
+    
+    Agents:
+    - Clarification Agent: responsible for clarifying the user's input if it is unclear or ambiguous.
+    - Pre-Plan Agent: responsible for gathering information about the user's business or product idea, business context, and user-requested research areas.
+    - Search Plan Agent: responsible for finalizing the web search plan with the user.
+    - Research Agent: responsible for conducting research on the user's business or product idea, business context, and user-requested research areas. Determine with the user what should be included in the final report, and if further research should be conducted on certain areas.
+"""
+
+# OLD_PROMPT =
+"""
     You are the Triage Agent in a multi-agent research assistant system.
     Your job is to evaluate each user input and the current system stage, and determine a task and the appropriate agent (research_planner, research, response) to handoff the task to.
 
@@ -35,17 +58,13 @@ PROMPT = """
 
 """
 
-class ActionItem(BaseModel):
-    agent: str
-    """The agent to handoff the task to."""
-    task: str
-    """The task to handoff the task to."""
-    details: str
-    """Any additional details to handoff the task to."""
-
 triage_agent = Agent(
     name="TriageAgent",
     instructions=PROMPT,
-    model="gpt-4o",
-    response_format=ActionItem,
+    handoffs=[
+        clarification_agent,
+        preplan_agent,
+        search_plan_agent,
+        research_agent,
+    ]
 )
