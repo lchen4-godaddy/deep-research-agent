@@ -1,6 +1,4 @@
 import asyncio
-import json
-import signal
 import sys
 from contextlib import asynccontextmanager
 
@@ -28,12 +26,6 @@ class Manager:
                 
                 if not user_input:
                     continue
-                
-                # chatbot_response = await Runner.run(preplan_agent, user_input, session=session)
-                # print(chatbot_response.final_output)
-
-                # history = await session.get_items()
-                # print(history)
 
                 # Use streaming to capture tool outputs and agent responses with timeout
                 print(f"\n🔄 Starting agent processing...")
