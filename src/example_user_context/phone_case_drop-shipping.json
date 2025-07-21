@@ -1,0 +1,87 @@
+{
+    "topic": "Starting a Phone Case FBA Drop-shipping Business",
+    "business_context": {
+      "industry": "E-commerce (Consumer Electronics Accessories)",
+      "location": "Online/National (U.S. focus, can be adapted for other regions)",
+      "objective": "Launch a profitable phone case business using Amazon FBA and drop-shipping fulfillment"
+    },
+    "user_requested_research_topics": [
+      "Market demand for phone cases and related accessories",
+      "Local (Amazon) competition analysis",
+      "Startup costs and ongoing expenses",
+      "Required permits, regulations, and Amazon policies",
+      "Revenue projection and pricing strategies",
+      "Target customer demographics",
+      "Marketing and promotion strategies"
+    ],
+    "research_plan_outline": {
+      "Market Research": {
+        "Market Need": [
+          "Assess demand for phone cases on Amazon and other online platforms",
+          "Identify popular types, styles, and features (material, design, phone models supported)"
+        ],
+        "Competition": [
+          "List top-selling phone case brands and sellers on Amazon",
+          "Analyze product listings, pricing, customer reviews/ratings, and unique selling points"
+        ],
+        "Trends": [
+          "Identify trends in phone case design (eco-friendly, customizable, protective, MagSafe, etc.)",
+          "Note recent shifts in consumer preferences (e.g., biodegradable cases, influencer collaborations)"
+        ],
+        "Target Customers": [
+          "Demographic and psychographic profile of likely buyers (age, tech-savviness, phone ownership, style preferences)",
+          "Key purchase motivations (protection, fashion, gifting)"
+        ]
+      },
+      "Business Model Research": {
+        "Market Value": [
+          "Estimate potential revenue based on market size and average order value",
+          "Assess seasonality and peak sales periods (e.g., phone launches, holidays)"
+        ],
+        "Revenue Streams": [
+          "Primary: Direct sale of phone cases via Amazon FBA",
+          "Secondary: Bundled accessories (screen protectors, charging cables), custom designs, bulk/wholesale orders"
+        ],
+        "Costs": [
+          "Startup: Sample orders, design/logo creation, Amazon seller account fees, initial inventory (if any), listing fees",
+          "Ongoing: Product sourcing (drop-shipping costs), Amazon FBA fees, returns/refunds, advertising/promotion"
+        ],
+        "Resource Requirements": [
+          "Supplier relationships (AliExpress, Alibaba, or domestic suppliers)",
+          "Amazon account management, customer service"
+        ]
+      },
+      "Regulatory Research": {
+        "Permits and Licenses": [
+          "Required business licenses (LLC, sole proprietorship, EIN, etc.)",
+          "Sales tax registration as required by state"
+        ],
+        "Amazon & Legal Compliance": [
+          "Amazon FBA terms of service and seller policies",
+          "Product safety standards (materials, certifications if needed), intellectual property (avoid trademark/copyright violations)"
+        ],
+        "Operating Restrictions": [
+          "Restrictions on certain designs (e.g., copyrighted images, branded logos)",
+          "Amazon category approval or restrictions"
+        ]
+      },
+      "Marketing & Promotion": {
+        "Online Presence": [
+          "Amazon product listing optimization (SEO, images, A+ content), brand store setup",
+          "Social media marketing (Instagram, TikTok, Facebook), influencer partnerships"
+        ],
+        "Amazon-Specific Strategies": [
+          "Amazon ads (PPC), promotions, coupons, early reviewer programs",
+          "Encourage reviews and ratings for social proof"
+        ],
+        "Launch Campaign": [
+          "Initial giveaways, discounts, or bundled offers to boost sales velocity and ranking",
+          "Leverage email marketing (with customer consent) for repeat business"
+        ]
+      }
+    },
+    "next_steps": [
+      "Confirm research plan with user",
+      "Proceed to detailed research and data collection phase"
+    ]
+  }
