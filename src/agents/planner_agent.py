@@ -4,9 +4,6 @@ from pydantic import BaseModel
 from agents import Agent, Runner, function_tool, RunContextWrapper
 from ..custom_session import CustomSession
 
-import os, sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-# import ../globals.py
 from ..globals import CURRENT_SESSION as session
 
 PLANNER_AGENT_PROMPT = """

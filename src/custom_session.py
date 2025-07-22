@@ -1,6 +1,5 @@
 from agents import SQLiteSession
 from typing import Dict, Any, Optional
-import json
 
 
 class CustomSession(SQLiteSession):
