@@ -109,6 +109,11 @@ class Manager:
 
     async def run(self) -> None:
         """Main agent loop."""
+        
+        print("Welcome to the Deep Research Assistant for business development. What business or product idea do you have in mind?")
+
+        # Add initial message to the session
+        await session.add_items([{"role": "system", "content": "Welcome to the Deep Research Assistant for business development. What business or product idea do you have in mind?"}])
 
         # Add initial message to the session
         await session.add_items([{"role": "system", "content": "Welcome to the Deep Research Assistant for business development. What business or product idea do you have in mind?"}])

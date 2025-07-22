@@ -1,10 +1,9 @@
-from email import message
 from pydantic import BaseModel
 
-from agents import Agent, Runner, function_tool, RunContextWrapper
-from ..custom_session import CustomSession
+from agents import Agent, Runner, function_tool
 
-from ..globals import CURRENT_SESSION as session
+from .tools.plan_writer_tool import plan_writer_tool
+from .tools.plan_summarizer_tool import plan_summarizer_tool
 
 PLANNER_AGENT_PROMPT = """
 
@@ -42,80 +41,6 @@ PLANNER_AGENT_PROMPT = """
     - Do NOT call plan_writer_tool until you have gathered this complete information from the user
     - If any information is missing, ask the user for it before calling the tool
 """
-
-PLAN_WRITER_PROMPT = """
-    You are the Plan Writer, a tool-agent for the Planner Agent.
-
-    INSTRUCTIONS:
-    Use the conversation context to create a COMPREHENSIVE research plan.
-    DO NOT make up information for any of the user-provided information.
-    Use ONLY the information provided in the conversation context.
-    Filter out any extraneous or irrelevant information from the conversation context that is not pertinent to creating a research plan.
-    If anything under the information section is missing, note it as "To be determined" rather than making it up.
-    If the user doesn't indicate any preference or requirements for research areas, use the structure-provided research areas below and develop research questions for each area.
-
-    Plan Structure:
-    - Information:
-        - Product Name: [Use the actual product name from conversation]
-        - Description: [Generate a concise, refined description of the product using the user's description from the conversation, < 200 words]
-        - Features and Scope
-    - Research Areas:
-        - Market Analysis:
-            - Industry Trends / Product Validation
-            - Target Audience
-            - Competitors
-        - Business Model / Financial Research:
-            - Pricing
-            - Revenue Streams
-        - Marketing Research:
-            - Marketing Channels
-            - Marketing Strategies
-        - Technical and Legal Research:
-            - Technical Feasibility
-            - Legal Requirements
-            - IP Protection
-            - Regulatory Compliance
-"""
-
-@function_tool
-async def plan_writer_tool() -> str:
-    """Create a research plan for the user's business idea using session conversation history."""
-
-    # Get the conversation history from the session
-    conversation_history = await session.get_items()
-
-    plan_writer = Agent(
-    name="PlanWriterToolAgent",
-    instructions=PLAN_WRITER_PROMPT,
-    model="o4-mini",
-    )
-    
-    # Run the plan_writer agent
-    research_plan = await Runner.run(plan_writer, conversation_history)
-    
-    return research_plan.final_output
-
-@function_tool
-async def plan_summarizer_tool() -> str:
-    """Summarize the research plan for the user to review."""
-    
-    # Get the research plan from the session
-    research_plan = await session.get_tool_output("plan_writer_tool")
-
-    summarizer = Agent(
-        name="PlanSummarizerToolAgent",
-        instructions="""
-        You are a research plan summarizer.
-        Create a concise, clear summary of the research plan for the user to review.
-        Don't summarize the description in the information section, since it is already created concisely.
-        Keep headers and section titles the same, only summarize the sections of developed research questions and ideas.
-        """,
-        model="o4-mini",
-    )
-    
-    summary = await Runner.run(summarizer, str(research_plan))
-
-    return summary.final_output
 
 planner_agent = Agent(
     name="PlannerAgent",
