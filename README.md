@@ -9,6 +9,7 @@ A research bot that uses AI agents to perform web searches and generate comprehe
 - **Report Generation**: Creates detailed markdown reports with summaries and follow-up questions
 - **Rich Console Interface**: Beautiful progress tracking with spinners and status updates
 - **Error Handling**: Graceful handling of API errors and network issues
+- **Multi-Agent Architecture**: Specialized agents for planning, research, clarification, and triage
 
 ## Quick Start
 
@@ -25,14 +26,11 @@ A research bot that uses AI agents to perform web searches and generate comprehe
    git clone https://github.com/lchen4-godaddy/deep-research-agent.git
    cd deep-research-agent
    ```
-2. **Set up virtual environment**
+
+2. **Set up virtual environment and install dependencies**
    ```bash
    uv venv
-   source .venv/bin/activate
-   ```
-
-2. **Install dependencies**
-   ```bash
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    uv sync
    ```
 
@@ -46,6 +44,31 @@ A research bot that uses AI agents to perform web searches and generate comprehe
    ```bash
    ./run.sh
    ```
+
+## Development Setup
+
+### Install uv
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+### Set up development environment
+```bash
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+uv sync --group dev
+```
+
+### Run tests
+```bash
+uv run pytest
+```
+
+### Run linting
+```bash
+uv run ruff check .
+uv run black .
+```
 
 ## Configuration
 
@@ -72,18 +95,32 @@ AGENTS_LOGGING_LEVEL=ERROR
 
 ```
 src/
-├── agents/                 # Agent definitions
-│   ├── planner_agent.py   # Plans search strategy
-│   ├── search_agent.py    # Performs web searches
-│   └── writer_agent.py    # Generates reports
-├── main.py                # Entry point
-├── manager.py             # Orchestrates the research process
-└── printer.py             # Rich console output
+├── agents/                    # Agent definitions
+│   ├── planner_agent.py      # Plans search strategy
+│   ├── research_agent.py     # Performs web searches and research
+│   ├── clarification_agent.py # Handles user clarification
+│   ├── triage_agent.py       # Evaluates and categorizes information
+│   ├── search_plan_agent.py  # Creates detailed search plans
+│   └── tools/                # Agent tools and utilities
+├── main.py                   # Entry point
+├── manager.py                # Orchestrates the research process
+├── custom_session.py         # Custom session management
+├── printer.py                # Rich console output
+├── globals.py                # Global configuration
+├── test_manager.py           # Testing utilities
+├── example_user_context/     # Example user contexts
+└── sample_outputs/           # Sample research outputs
 ```
 
-1. **New Agents**: Add agent definitions in `research_bot/agents/`
-2. **New Tools**: Extend the agents with additional tools
-3. **UI Improvements**: Modify `printer.py` for different output formats
+## Architecture
+
+The project uses a multi-agent architecture:
+
+- **Planner Agent**: Creates high-level research strategies
+- **Research Agent**: Performs web searches and gathers information
+- **Clarification Agent**: Handles user questions and clarifications
+- **Triage Agent**: Evaluates and categorizes gathered information
+- **Search Plan Agent**: Creates detailed search execution plans
 
 ## Dependencies
 
@@ -91,3 +128,47 @@ src/
 - **rich**: Beautiful console output and progress tracking
 - **pydantic**: Data validation and model definitions
 - **python-dotenv**: Environment variable management
+- **requests**: HTTP client for web requests
+- **typing-extensions**: Enhanced type hints
+
+## Development
+
+### Adding New Features
+
+1. **New Agents**: Add agent definitions in `src/agents/`
+2. **New Tools**: Extend the agents with additional tools in `src/agents/tools/`
+3. **UI Improvements**: Modify `src/printer.py` for different output formats
+4. **Configuration**: Update `src/globals.py` for new settings
+
+### Testing
+
+The project includes comprehensive testing with pytest:
+
+```bash
+# Run all tests
+uv run pytest
+
+# Run specific test file
+uv run pytest src/test_manager.py
+
+# Run with coverage
+uv run pytest --cov=src
+```
+
+### Code Quality
+
+The project uses several tools for code quality:
+
+- **ruff**: Fast Python linter
+- **black**: Code formatting
+- **isort**: Import sorting
+- **mypy**: Type checking
+
+Run all quality checks:
+
+```bash
+uv run ruff check .
+uv run black .
+uv run isort .
+uv run mypy src/
+```

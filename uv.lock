@@ -202,17 +202,6 @@ dependencies = [
     { name = "typing-extensions" },
 ]
 
-[package.optional-dependencies]
-dev = [
-    { name = "black" },
-    { name = "isort" },
-    { name = "mypy" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-mock" },
-    { name = "ruff" },
-]
-
 [package.dev-dependencies]
 dev = [
     { name = "black" },
@@ -226,23 +215,15 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "black", marker = "extra == 'dev'", specifier = ">=23.0.0" },
-    { name = "isort", marker = "extra == 'dev'", specifier = ">=5.0.0" },
-    { name = "mypy", marker = "extra == 'dev'" },
     { name = "openai", specifier = ">=1.87.0" },
     { name = "openai-agents", git = "https://github.com/openai/openai-agents-python.git" },
     { name = "pydantic", specifier = ">=2.10,<3" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'" },
-    { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.14.0" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "requests", specifier = ">=2.0,<3" },
     { name = "rich", specifier = ">=13.1.0,<14" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = "==0.9.2" },
     { name = "types-requests", specifier = ">=2.0,<3" },
     { name = "typing-extensions", specifier = ">=4.12.2,<5" },
 ]
-provides-extras = ["dev"]
 
 [package.metadata.requires-dev]
 dev = [
