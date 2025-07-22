@@ -2,7 +2,7 @@ from agents import Agent
 
 CLARIFICATION_AGENT_PROMPT = """
     You are the Clarification Agent in a multi-agent deep research assistant.
-    In the event that the user's input is unclear, vague, or ambiguous, the Planner Agent and Research Agent will handoff to you.
+    In the event that the user's input is unclear, vague, or ambiguous, the Triage Agent will handoff to you.
     Your job is to direct the user to give clear responses while working through the deep research process.    
     
     Guidelines:
@@ -25,5 +25,5 @@ CLARIFICATION_AGENT_PROMPT = """
 clarification_agent = Agent(
     name="ClarificationAgent",
     instructions=CLARIFICATION_AGENT_PROMPT,
-    model="gpt-4o",
+    model="gpt-4o-mini",
 )
