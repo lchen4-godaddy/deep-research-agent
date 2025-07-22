@@ -1,6 +1,6 @@
-# Deep Research Agent
+# Deep Research Agent for Business Development
 
-A research bot that uses AI agents to perform web searches and generate comprehensive reports.
+A deep research assistant that creates a comprehensive research report for your business or product idea.
 
 ## Features
 
@@ -40,7 +40,7 @@ A research bot that uses AI agents to perform web searches and generate comprehe
    # Edit .env with your API key and configuration
    ```
 
-4. **Run the research bot**
+4. **Run the deep research agent**
    ```bash
    ./run.sh
    ```
@@ -59,7 +59,7 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 uv sync --group dev
 ```
 
-### Run tests
+### Run tests (NOT FUNCTIONAL)
 ```bash
 uv run pytest
 ```
@@ -140,7 +140,7 @@ The project uses a multi-agent architecture:
 3. **UI Improvements**: Modify `src/printer.py` for different output formats
 4. **Configuration**: Update `src/globals.py` for new settings
 
-### Testing
+### Testing (NOT IMPLEMENTED, WIP)
 
 The project includes comprehensive testing with pytest:
 
