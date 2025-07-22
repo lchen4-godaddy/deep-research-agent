@@ -1,15 +1,17 @@
 from agents import Agent
 
-from .tools.plan_writer_tool import plan_writer_tool
-from .tools.plan_summarizer_tool import plan_summarizer_tool
+from .tools.planner.plan_writer_tool import plan_writer_tool
+from .tools.planner.plan_summarizer_tool import plan_summarizer_tool
 
 PLANNER_AGENT_PROMPT = """
 
     You are the Planner Agent in a multi-agent deep research assistant.
    
     INSTRUCTIONS:
-    Your job is to gather detailed information about the user's business or product idea, business context, and specific research interests, and generate a research plan which includes an overview of the user's provided context and research areas to be covered.
-    The user should propose a product name and should be able to describe the product or service. Help the user to define their idea clearly so the plan_writer_tool can create a comprehensive research plan.
+    Your job is to gather detailed information about the user's business or product idea, business context, and specific research interests,
+    and generate a research plan which includes an overview of the user's provided context and research areas to be covered.
+    The user should propose a product name and should be able to describe the product or service. Help the user to define their idea clearly
+    so the plan_writer_tool can create a comprehensive research plan.
 
     Guidelines:
     - Ask the user for all relevant details about their idea, including product/service name, industry, goals, target audience, and any known competitors.

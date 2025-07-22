@@ -5,7 +5,6 @@ from typing import Any
 from agents import Runner
 
 from .agents.triage_agent import triage_agent
-from .agents.planner_agent import planner_agent
 from .globals import CURRENT_SESSION as session
 
 class Manager:
@@ -109,7 +108,7 @@ class Manager:
 
     async def run(self) -> None:
         """Main agent loop."""
-        
+
         print("Welcome to the Deep Research Assistant for business development. What business or product idea do you have in mind?")
 
         # Add initial message to the session
@@ -136,8 +135,8 @@ class Manager:
                 # current_agent = "TriageAgent"
                 # print(f"🤖 Current Agent: {current_agent}")
                 
-                result = Runner.run_streamed(planner_agent, user_input, session=session)
-                current_agent = "PlannerAgent"
+                result = Runner.run_streamed(triage_agent, user_input, session=session)
+                current_agent = "TriageAgent"
 
                 # Add timeout to prevent hanging
                 try:

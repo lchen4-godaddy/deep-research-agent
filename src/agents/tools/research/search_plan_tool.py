@@ -1,5 +1,6 @@
 from agents import Agent, Runner, function_tool
-from ...globals import CURRENT_SESSION as session
+
+from ....globals import CURRENT_SESSION as session
 
 SEARCH_PLANNER_PROMPT = """
     You are the Search Plan Tool.
@@ -14,8 +15,7 @@ SEARCH_PLANNER_PROMPT = """
 
     IMPORTANT: If a search plan already exists and modifications are requested, use the current search plan as a template and modify the existing search plan. 
     Only modify the contents that the user requests. Do not create a new search plan from scratch, and do not modify fields which are not explicitly requested.
-
-"""
+    """
 
 @function_tool
 async def search_plan_tool() -> str:

@@ -1,6 +1,6 @@
 from agents import Agent, Runner, function_tool
 
-from ...globals import CURRENT_SESSION as session
+from ....globals import CURRENT_SESSION as session
 
 RESEARCH_REPORT_PROMPT = """
     You are a business analyst creating a comprehensive research report. You will receive research 
@@ -107,9 +107,7 @@ RESEARCH_REPORT_PROMPT = """
     2. Assess preferences for specific taco varieties to tailor the menu accordingly.
     3. Investigate local regulations further for any unique considerations or emerging trends specific to the city.
     ```
-
     """
-
 
 @function_tool
 async def report_writer_tool() -> str:

@@ -1,7 +1,6 @@
 from agents import Agent, Runner, function_tool
 
-
-from ...globals import CURRENT_SESSION as session
+from ....globals import CURRENT_SESSION as session
 
 PLAN_WRITER_PROMPT = """
     You are the Plan Writer, a tool-agent for the Planner Agent.
@@ -35,7 +34,7 @@ PLAN_WRITER_PROMPT = """
             - Legal Requirements
             - IP Protection
             - Regulatory Compliance
-"""
+    """
 
 @function_tool
 async def plan_writer_tool() -> str:

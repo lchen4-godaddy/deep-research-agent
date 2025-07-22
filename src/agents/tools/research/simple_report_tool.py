@@ -1,9 +1,6 @@
 from agents import Agent, Runner, function_tool
 
-from ...globals import CURRENT_SESSION as session
-
-# Import the report data models
-
+from ....globals import CURRENT_SESSION as session
 
 SIMPLE_REPORT_PROMPT = """
     You are a business analyst creating a quick executive summary. You will receive research 
