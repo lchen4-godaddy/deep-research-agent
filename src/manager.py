@@ -183,12 +183,6 @@ class Manager:
                                             call_id = raw_item['call_id']
                                             tool_name = tool_call_map.get(call_id, "unknown_tool")
                                             print(f"📤 Tool Output for {tool_name} (call_id: {call_id})")
-                                            
-                                            # Store the tool output
-                                            if 'output' in raw_item:
-                                                output_data = raw_item['output']
-                                                print(f"💾 Storing output for {tool_name}: {str(output_data)[:100]}...")
-                                                await session.store_tool_output(tool_name, output_data)
                                         else:
                                             print(f"📤 Tool Output received (no call_id found)")
                                     else:
@@ -222,7 +216,7 @@ class Manager:
                 tool_outputs = await session.get_all_tool_outputs()
                 if tool_outputs:  # Only show if there are tool outputs
                     for tool_name, data in tool_outputs.items():
-                        print(f"🔧 {tool_name} - {str(data)[:150]}...")
+                        print(f"🔧 {tool_name} - {str(data)}...")
                 else:
                     print(f"🗋 No stored tool outputs")
                 

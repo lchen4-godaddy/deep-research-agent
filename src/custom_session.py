@@ -23,4 +23,4 @@ class CustomSession(SQLiteSession):
     
     async def clear_tool_outputs(self) -> None:
         """Clear all stored tool outputs."""
-        self._tool_output_data.clear() 
+        self._tool_output_data.clear()

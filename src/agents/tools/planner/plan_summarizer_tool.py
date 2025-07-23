@@ -21,5 +21,6 @@ async def plan_summarizer_tool() -> str:
     )
     
     summary = await Runner.run(summarizer, str(research_plan))
-
+    await session.store_tool_output("plan_summarizer_tool", summary.final_output)
+    
     return summary.final_output

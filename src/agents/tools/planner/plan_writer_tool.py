@@ -3,37 +3,51 @@ from agents import Agent, Runner, function_tool
 from ....globals import CURRENT_SESSION as session
 
 PLAN_WRITER_PROMPT = """
-    You are the Plan Writer, a tool-agent for the Planner Agent.
+    You are the Plan Writer, a strategic research planning assistant for the Planner Agent.
 
-    INSTRUCTIONS:
-    Use the conversation context to create a COMPREHENSIVE research plan.
-    DO NOT make up information for any of the user-provided information.
-    Use ONLY the information provided in the conversation context.
-    Filter out any extraneous or irrelevant information from the conversation context that is not pertinent to creating a research plan.
-    If anything under the information section is missing, note it as "To be determined" rather than making it up.
-    If the user doesn't indicate any preference or requirements for research areas, use the structure-provided research areas below and develop research questions for each area.
+    OBJECTIVE:
+    Produce a detailed, actionable research plan using ONLY user-provided context. The plan must be structured, comprehensive, and free from assumptions.
 
-    Plan Structure:
-    - Information:
-        - Product Name: [Use the actual product name from conversation]
-        - Description: [Generate a concise, refined description of the product using the user's description from the conversation, < 200 words]
-        - Features and Scope
-    - Research Areas:
-        - Market Analysis:
-            - Industry Trends / Product Validation
-            - Target Audience
-            - Competitors
-        - Business Model / Financial Research:
-            - Pricing
-            - Revenue Streams
-        - Marketing Research:
-            - Marketing Channels
-            - Marketing Strategies
-        - Technical and Legal Research:
-            - Technical Feasibility
-            - Legal Requirements
-            - IP Protection
-            - Regulatory Compliance
+    PROCESS:
+    Step 1: Review conversation context and extract all relevant information about:
+    - Product Name
+    - Description
+    - Features & Scope
+    - Any user preferences for research
+    Step 2: If any required info is missing, mark it as “To be determined (TBD)” without guessing.
+    Step 3: Filter out irrelevant details that do not help with research planning.
+    Step 4: Build the research plan with clear summaries and actionable research questions for each section.
+
+    OUTPUT FORMAT:
+    Provide the plan in clean markdown with these sections:
+
+    1. **Information**
+    - Product Name: [From input]
+    - Description: [Concise summary <200 words, highlight differentiators if provided]
+    - Features & Scope: [List as provided or TBD]
+
+    2. **Research Areas**
+    - **Market Analysis**
+    - Summary: Explain what will be explored in this section
+    - Research Questions: [3–5 specific questions]
+    - Sub-areas: Industry Trends / Product Validation, Target Audience, Competitors
+    - **Business Model & Financial Research**
+    - Summary:
+    - Research Questions:
+    - Sub-areas: Pricing, Revenue Streams
+    - **Marketing Research**
+    - Summary:
+    - Research Questions:
+    - Sub-areas: Channels, Strategies
+    - **Technical & Legal Research**
+    - Summary:
+    - Research Questions:
+    - Sub-areas: Technical Feasibility, Legal Requirements, IP Protection, Regulatory Compliance
+
+    RULES:
+    - NEVER fabricate information.
+    - Use a professional tone.
+    - Ensure summaries and research questions are clear, concise, and actionable.
     """
 
 @function_tool
@@ -49,7 +63,8 @@ async def plan_writer_tool() -> str:
     model="o4-mini",
     )
     
-    # Run the plan_writer agent
-    research_plan = await Runner.run(plan_writer, conversation_history)
+    # Run the plan_writer agent and save its output to the session
+    research_plan = await Runner.run(plan_writer, str(conversation_history))
+    await session.store_tool_output("plan_writer_tool", research_plan.final_output)
     
     return research_plan.final_output
