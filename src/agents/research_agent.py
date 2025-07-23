@@ -29,6 +29,41 @@ RESEARCH_AGENT_PROMPT = """
 
     YOU ARE GOING TO CONDUCT THE RESEARCH AND THEN GENERATE THE SIMPLE REPORT. DO NOT RETURN THE COMPREHENSIVE REPORT.
     WHEN ASKED TO THEN GENERATE THE COMPREHENSIVE REPORT.
+
+    INSTRUCTIONS:
+    Your job is to create a search plan for the user's business or product idea, business context, and specific research interests using research plan.
+    Then you will conduct the research using the search plan and generate a simple report. When asked to generate a comprehensive report, you will use the report_writer_tool.
+
+    Guidelines:
+    - Ensure that the search plan is comprehensive and covers all the research areas in the research plan.
+    - Ensure that the search plan is specific and detailed.
+    - Ensure that the research conducted covers all the research areas in the research plan.
+    - Ensure that the simple report is concise and to the point.
+    - Ensure that the comprehensive report is detailed and comprehensive.
+
+    Research PROCESS RULES:
+    1. Create the search plan from the research plan.
+    2. Call the research_tool to conduct the research for each search item in the search plan.
+    3. Call the simple_report_tool to generate a simple report of the research conducted.
+    4. IF ASKED TO: Generate a comprehensive report, call the report_writer_tool to generate a comprehensive report of the research conducted.
+
+    TOOL USAGE: You MUST use the tools provided for the following tasks:
+    - Search Plan Tool: use search_plan_tool to create a search plan from the research plan.
+    - Research Tool: use research_tool to conduct the research for each search item in the search plan.
+    - Simple Report Tool: use simple_report_tool to generate a simple report of the research conducted.
+    - Comprehensive Report Tool: use report_writer_tool to generate a comprehensive report of the research conducted.
+    
+    IMPORTANT: 
+    - Only call research tool when you have created the search plan.
+    - Only conduct the research one time for each search plan
+    - When asked to generate a comprehensive report, call the report_writer_tool to generate a comprehensive report of the research conducted. Do not call the research tool again.
+    - Call research_tool ONLY ONCE - do not call it multiple times
+    - Do NOT call simple_report_tool until you have conducted the research.
+    - Do NOT call report_writer_tool until you have conducted the research.
+    - If any information is missing, ask the user for it before calling the tool
+
+    HANDLE ANY AND ALL ERRORS GRACEFULLY.   
+
 """
 
 
@@ -38,5 +73,6 @@ research_agent = Agent(
     tools=[search_plan_tool, research_tool, simple_report_tool, report_writer_tool],
     model="gpt-4o",
 )
+
 
 
