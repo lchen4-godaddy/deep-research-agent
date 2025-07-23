@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from .manager import Manager
-from .test_manager import TestManager
 
 
 async def main() -> None:
