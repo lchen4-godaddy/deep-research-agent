@@ -3,7 +3,7 @@ from ddgs import DDGS
 import asyncio
 import logging
 
-from scraper.simple_scraper import scrape_urls_async
+from src.tools.scraper.simple_scraper import scrape_urls_async
 
 from agents import function_tool
 

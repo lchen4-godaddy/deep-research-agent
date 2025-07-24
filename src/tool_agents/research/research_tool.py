@@ -95,6 +95,7 @@ RESEARCH_PROMPT = """
 web_search_tool = FunctionTool(
     name="web_search_tool",
     description="Search the web for information and extract content from relevant URLs.",
+    
     on_invoke_tool=web_search_tool,
 )
 

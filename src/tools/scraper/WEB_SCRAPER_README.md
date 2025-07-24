@@ -38,7 +38,7 @@ The web scraper consists of two main components:
 
 ```python
 import asyncio
-from src.agents.tools.research.web_search_tool import web_search_tool
+from src.tools.web_search_tool import web_search_tool
 
 async def main():
     # Search for information and extract content

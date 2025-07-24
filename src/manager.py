@@ -4,7 +4,7 @@ from typing import Any
 
 from agents import Runner
 
-from .agents.triage_agent import triage_agent
+from .main_agents.triage_agent import triage_agent
 from .globals import CURRENT_SESSION as session
 
 class Manager:
