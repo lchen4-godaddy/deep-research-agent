@@ -87,13 +87,13 @@ async def web_search(query: str) -> Dict[str, str]:
         return content
         
     except Exception as e:
-        logging.error(f"Error in web_search_tool: {str(e)}")
+        logging.error(f"Error in web_search: {str(e)}")
         return {"error": f"Error during web search: {str(e)}"}
 
 @function_tool
 async def web_search_tool(query: str) -> Dict[str, str]:
     """
-    Search the web for information and extract content from relevant URLs.
+    Tool wrapper for web search functionality.
     
     Args:
         query: The search query
@@ -101,18 +101,4 @@ async def web_search_tool(query: str) -> Dict[str, str]:
     Returns:
         Dictionary mapping URLs to their extracted content
     """
-    try:
-        # Find relevant URLs
-        urls = source_finder(query)
-        
-        if not urls:
-            return {"error": "No URLs found for the query"}
-        
-        # Extract content from the URLs
-        content = await web_content_extractor(urls)
-        
-        return content
-        
-    except Exception as e:
-        logging.error(f"Error in web_search_tool: {str(e)}")
-        return {"error": f"Error during web search: {str(e)}"}
+    return await web_search(query)

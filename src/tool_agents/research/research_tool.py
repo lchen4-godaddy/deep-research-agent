@@ -92,21 +92,14 @@ RESEARCH_PROMPT = """
     - Confidence ratings for each insight.
     """
 
-web_search_tool = FunctionTool(
-    name="web_search_tool",
-    description="Search the web for information and extract content from relevant URLs.",
-    
-    on_invoke_tool=web_search_tool,
-)
-
 @function_tool
 async def research_tool() -> str:
     """Conduct web research using the research subagent."""
     
     research_subagent = Agent(
-        name="ResearchSubAgent", 
+        name="ResearchSubAgent",
         instructions=RESEARCH_PROMPT,
-        tools=[WebSearchTool()],
+        tools=[web_search_tool],
         model="gpt-4o-mini",
     )
     
