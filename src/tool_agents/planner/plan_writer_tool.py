@@ -1,6 +1,6 @@
 from agents import Agent, Runner, function_tool
 
-from ....globals import CURRENT_SESSION as session
+from ...globals import CURRENT_SESSION as session
 
 PLAN_WRITER_PROMPT = """
     You are the Plan Writer, a strategic research planning assistant for the Planner Agent.

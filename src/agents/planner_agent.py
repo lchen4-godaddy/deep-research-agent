@@ -1,7 +1,7 @@
 from agents import Agent
 
-from .tools.planner.plan_writer_tool import plan_writer_tool
-from .tools.planner.plan_summarizer_tool import plan_summarizer_tool
+from ..tool_agents.planner.plan_writer_tool import plan_writer_tool
+from ..tool_agents.planner.plan_summarizer_tool import plan_summarizer_tool
 
 PLANNER_AGENT_PROMPT = """
 

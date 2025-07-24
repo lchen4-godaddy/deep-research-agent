@@ -1,5 +1,7 @@
-from agents import Agent, WebSearchTool, Runner, function_tool
-from ....globals import CURRENT_SESSION as session
+from agents import Agent, WebSearchTool, Runner, function_tool, FunctionTool
+from ...globals import CURRENT_SESSION as session
+
+from src.tools.web_search_tool import web_search_tool
 
 RESEARCH_PROMPT = """
    You are the Research Agent in a multi-agent research system.
@@ -89,6 +91,12 @@ RESEARCH_PROMPT = """
     - Credible sources for verification.
     - Confidence ratings for each insight.
     """
+
+web_search_tool = FunctionTool(
+    name="web_search_tool",
+    description="Search the web for information and extract content from relevant URLs.",
+    on_invoke_tool=web_search_tool,
+)
 
 @function_tool
 async def research_tool() -> str:

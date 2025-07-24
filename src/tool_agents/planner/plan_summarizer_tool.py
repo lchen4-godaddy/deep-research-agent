@@ -1,6 +1,6 @@
 from agents import Agent, Runner, function_tool
 
-from ....globals import CURRENT_SESSION as session
+from ...globals import CURRENT_SESSION as session
 
 @function_tool
 async def plan_summarizer_tool() -> str:

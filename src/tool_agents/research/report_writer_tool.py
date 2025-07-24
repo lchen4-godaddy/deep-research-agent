@@ -1,6 +1,6 @@
 from agents import Agent, Runner, function_tool
 
-from ....globals import CURRENT_SESSION as session
+from ...globals import CURRENT_SESSION as session
 
 RESEARCH_REPORT_PROMPT = """
     You are a business analyst creating a comprehensive research report. You will receive research 

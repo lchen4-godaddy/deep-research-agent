@@ -7,7 +7,7 @@ A deep research assistant that creates a comprehensive research report for your 
 - **Intelligent Search Planning**: Uses AI to plan multiple targeted web searches
 - **Web Search Integration**: Performs actual web searches using OpenAI's agents
 - **Report Generation**: Creates detailed markdown reports with summaries and follow-up questions
-- **Rich Console Interface**: Beautiful progress tracking with spinners and status updates
+- **Console Output**: Simple and clear progress tracking
 - **Error Handling**: Graceful handling of API errors and network issues
 - **Multi-Agent Architecture**: Specialized agents for planning, research, clarification, and triage
 
@@ -105,7 +105,7 @@ src/
 ├── main.py                   # Entry point
 ├── manager.py                # Orchestrates the research process
 ├── custom_session.py         # Custom session management
-├── printer.py                # Rich console output
+
 ├── globals.py                # Global configuration
 ├── test_manager.py           # Testing utilities
 ├── example_user_context/     # Example user contexts
@@ -125,7 +125,7 @@ The project uses a multi-agent architecture:
 ## Dependencies
 
 - **openai-agents**: OpenAI Agents SDK for AI-powered research
-- **rich**: Beautiful console output and progress tracking
+
 - **pydantic**: Data validation and model definitions
 - **python-dotenv**: Environment variable management
 - **requests**: HTTP client for web requests
@@ -137,7 +137,7 @@ The project uses a multi-agent architecture:
 
 1. **New Agents**: Add agent definitions in `src/agents/`
 2. **New Tools**: Extend the agents with additional tools in `src/agents/tools/`
-3. **UI Improvements**: Modify `src/printer.py` for different output formats
+3. **UI Improvements**: Modify console output in `src/manager.py` for different output formats
 4. **Configuration**: Update `src/globals.py` for new settings
 
 ### Testing (NOT IMPLEMENTED, WIP)
