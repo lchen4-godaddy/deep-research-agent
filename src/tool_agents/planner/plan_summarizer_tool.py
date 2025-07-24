@@ -1,13 +1,13 @@
 from agents import Agent, Runner, function_tool
 
-from ...globals import CURRENT_SESSION as session
+from ...globals import CURRENT_SESSION
 
 @function_tool
 async def plan_summarizer_tool() -> str:
     """Summarize the research plan for the user to review."""
     
     # Get the research plan from the session
-    research_plan = await session.get_tool_output("plan_writer_tool")
+    research_plan = await CURRENT_SESSION.get_tool_output("plan_writer_tool")
 
     summarizer = Agent(
         name="PlanSummarizerToolAgent",
@@ -21,6 +21,6 @@ async def plan_summarizer_tool() -> str:
     )
     
     summary = await Runner.run(summarizer, str(research_plan))
-    await session.store_tool_output("plan_summarizer_tool", summary.final_output)
+    await CURRENT_SESSION.store_tool_output("plan_summarizer_tool", summary.final_output)
     
     return summary.final_output

@@ -1,5 +1,5 @@
 from agents import Agent, WebSearchTool, Runner, function_tool, FunctionTool
-from ...globals import CURRENT_SESSION as session
+from ...globals import CURRENT_SESSION
 
 from src.tools.web_search_tool import web_search_tool
 
@@ -103,7 +103,7 @@ async def research_tool() -> str:
         model="gpt-4o-mini",
     )
     
-    plan = await session.get_tool_output("plan_writer_tool")
+    plan = await CURRENT_SESSION.get_tool_output("plan_writer_tool")
 
     result = await Runner.run(research_subagent, plan)
 

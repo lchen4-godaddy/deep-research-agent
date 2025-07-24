@@ -4,7 +4,7 @@ from .clarification_agent import clarification_agent
 from .planner_agent import planner_agent
 from .research_agent import research_agent
 
-from ..globals import CURRENT_SESSION as session
+from ..globals import CURRENT_SESSION
 
 TRIAGE_AGENT_PROMPT = """
     You are the Triage Agent in a multi-agent deep research assistant.
@@ -31,7 +31,7 @@ TRIAGE_AGENT_PROMPT = """
 @function_tool
 async def plan_retriever_tool() -> str:
     """Retrieve the research plan from the session."""
-    return await session.get_tool_output("plan_writer_tool")
+    return await CURRENT_SESSION.get_tool_output("plan_writer_tool")
 
 triage_agent = Agent(
     name="TriageAgent",

@@ -5,7 +5,7 @@ from typing import Any
 from agents import Runner
 
 from .main_agents.triage_agent import triage_agent
-from .globals import CURRENT_SESSION as session
+from .globals import CURRENT_SESSION
 
 class Manager:
     def _get_tool_name(self, event_item: Any) -> str:
@@ -112,10 +112,7 @@ class Manager:
         print("Welcome to the Deep Research Assistant for business development. What business or product idea do you have in mind?")
 
         # Add initial message to the session
-        await session.add_items([{"role": "system", "content": "Welcome to the Deep Research Assistant for business development. What business or product idea do you have in mind?"}])
-
-        # Add initial message to the session
-        await session.add_items([{"role": "system", "content": "Welcome to the Deep Research Assistant for business development. What business or product idea do you have in mind?"}])
+        await CURRENT_SESSION.add_items([{"role": "system", "content": "Welcome to the Deep Research Assistant for business development. What business or product idea do you have in mind?"}])
         
         # User-agent loop
         while True:
@@ -135,7 +132,7 @@ class Manager:
                 # current_agent = "TriageAgent"
                 # print(f"🤖 Current Agent: {current_agent}")
                 
-                result = Runner.run_streamed(triage_agent, user_input, session=session)
+                result = Runner.run_streamed(triage_agent, user_input, session=CURRENT_SESSION)
                 current_agent = "TriageAgent"
 
                 # Add timeout to prevent hanging
@@ -207,13 +204,13 @@ class Manager:
                 
                 # Debug: Show session memory contents
                 print(f"🔍 Session Conversation History:")
-                session_items = await session.get_items()
+                session_items = await CURRENT_SESSION.get_items()
                 for i, item in enumerate(session_items[-5:]):  # Show last 5 items
                     print(f"  {i+1}. {type(item).__name__}: {str(item)[:150]}...")
                 
                 # Debug: Show stored tool outputs
                 print(f"🔍 Session Stored Tool Outputs:")
-                tool_outputs = await session.get_all_tool_outputs()
+                tool_outputs = await CURRENT_SESSION.get_all_tool_outputs()
                 if tool_outputs:  # Only show if there are tool outputs
                     for tool_name, data in tool_outputs.items():
                         print(f"🔧 {tool_name} - {str(data)}...")
