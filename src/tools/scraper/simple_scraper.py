@@ -104,7 +104,7 @@ class SimpleWebScraper:
                 }
             
             # Parse the HTML
-            soup = BeautifulSoup(response.content, 'html.parser')
+            soup = BeautifulSoup(response.content, 'lxml')
             
             # Extract title
             title = self._extract_title(soup)
