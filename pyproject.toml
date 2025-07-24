@@ -1,7 +1,7 @@
 [project]
 name = "deep-research-agent"
 version = "0.1.0"
-description = "A research bot that uses AI agents to perform web searches and generate reports"
+description = "A deep research assistant that creates a comprehensive research report for your business or product idea."
 readme = "README.md"
 requires-python = ">=3.9,<3.13"
 license = "MIT"
@@ -98,4 +98,5 @@ known_first_party = ["src"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "session" 
+asyncio_default_fixture_loop_scope = "session"
+testpaths = ["tests"] 

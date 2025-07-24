@@ -4,11 +4,6 @@ Test script for the web search tool components (source_finder and web_content_ex
 """
 
 import asyncio
-import sys
-import os
-
-# Add the src directory to the Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 from src.tools.web_search_tool import source_finder, web_content_extractor
 
