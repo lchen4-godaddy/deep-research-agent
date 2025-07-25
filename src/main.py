@@ -11,7 +11,6 @@ from .manager import Manager
 
 async def main() -> None:
     await Manager().run()
-    # await TestManager().run()
 
 
 if __name__ == "__main__":
