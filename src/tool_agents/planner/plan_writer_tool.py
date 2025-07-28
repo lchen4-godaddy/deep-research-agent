@@ -1,6 +1,6 @@
 from agents import Agent, Runner, function_tool
 
-from ...globals import CURRENT_SESSION
+from ...agent_memory import AGENT_MEMORY
 
 PLAN_WRITER_PROMPT = """
     You are the Plan Writer, a strategic research planning assistant for the Planner Agent.
@@ -55,16 +55,16 @@ async def plan_writer_tool() -> str:
     """Create a research plan for the user's business idea using session conversation history."""
 
     # Get the conversation history from the session
-    conversation_history = await CURRENT_SESSION.get_items()
+    conversation_history = await AGENT_MEMORY.get_items()
 
     plan_writer = Agent(
-    name="PlanWriterToolAgent",
+    name="Plan Writer Tool-Agent",
     instructions=PLAN_WRITER_PROMPT,
     model="o4-mini",
     )
     
     # Run the plan_writer agent and save its output to the session
     research_plan = await Runner.run(plan_writer, str(conversation_history))
-    await CURRENT_SESSION.store_tool_output("plan_writer_tool", research_plan.final_output)
+    await AGENT_MEMORY.set_research_plan(research_plan.final_output)
     
     return research_plan.final_output

@@ -1,5 +1,5 @@
 from agents import Agent, WebSearchTool, Runner, function_tool, FunctionTool
-from ...globals import CURRENT_SESSION
+from ...agent_memory import AGENT_MEMORY
 
 from src.tools.web_search_tool import web_search_tool
 
@@ -96,15 +96,15 @@ RESEARCH_PROMPT = """
 async def research_tool() -> str:
     """Conduct web research using the research subagent."""
     
-    research_subagent = Agent(
-        name="ResearchSubAgent",
+    researcher = Agent(
+        name="Research Tool-Agent",
         instructions=RESEARCH_PROMPT,
         tools=[web_search_tool],
         model="gpt-4o-mini",
     )
     
-    plan = await CURRENT_SESSION.get_tool_output("plan_writer_tool")
+    research_plan = await AGENT_MEMORY.get_research_plan()
 
-    result = await Runner.run(research_subagent, plan)
+    result = await Runner.run(researcher, research_plan)
 
     return result.final_output

@@ -4,10 +4,12 @@ from typing import Any
 
 from agents import Runner
 
-from .main_agents.triage_agent import triage_agent
-from .globals import CURRENT_SESSION
+from .main_agents.coordinator_agent import coordinator_agent
+from .agent_memory import AGENT_MEMORY
 
 class Manager:
+
+    
     def _get_tool_name(self, event_item: Any) -> str:
         """Extract tool name from event item using concrete type checks."""
         # Check if it's a dictionary with 'name' key
@@ -112,7 +114,7 @@ class Manager:
         print("Welcome to the Deep Research Assistant for business development. What business or product idea do you have in mind?")
 
         # Add initial message to the session
-        await CURRENT_SESSION.add_items([{"role": "system", "content": "Welcome to the Deep Research Assistant for business development. What business or product idea do you have in mind?"}])
+        await AGENT_MEMORY.add_items([{"role": "system", "content": "Welcome to the Deep Research Assistant for business development. What business or product idea do you have in mind?"}])
         
         # User-agent loop
         while True:
@@ -127,13 +129,10 @@ class Manager:
                     continue
 
                 # Use streaming to capture tool outputs and agent responses with timeout
-                # print(f"\n🔄 Starting agent processing...")
-                # result = Runner.run_streamed(triage_agent, user_input, session=session)
-                # current_agent = "TriageAgent"
-                # print(f"🤖 Current Agent: {current_agent}")
-                
-                result = Runner.run_streamed(triage_agent, user_input, session=CURRENT_SESSION)
-                current_agent = "TriageAgent"
+                print(f"\n🔄 Starting agent processing...")
+                result = Runner.run_streamed(coordinator_agent, user_input, session=AGENT_MEMORY.session)
+                current_agent = "Coordinator Agent"
+                print(f"🤖 Current Agent: {current_agent}")
 
                 # Add timeout to prevent hanging
                 try:
@@ -204,13 +203,13 @@ class Manager:
                 
                 # Debug: Show session memory contents
                 print(f"🔍 Session Conversation History:")
-                session_items = await CURRENT_SESSION.get_items()
+                session_items = await AGENT_MEMORY.get_items()
                 for i, item in enumerate(session_items[-5:]):  # Show last 5 items
                     print(f"  {i+1}. {type(item).__name__}: {str(item)[:150]}...")
                 
                 # Debug: Show stored tool outputs
                 print(f"🔍 Session Stored Tool Outputs:")
-                tool_outputs = await CURRENT_SESSION.get_all_tool_outputs()
+                tool_outputs = await AGENT_MEMORY.get_all_tool_outputs()
                 if tool_outputs:  # Only show if there are tool outputs
                     for tool_name, data in tool_outputs.items():
                         print(f"🔧 {tool_name} - {str(data)}...")

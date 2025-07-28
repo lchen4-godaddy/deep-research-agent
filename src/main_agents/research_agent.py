@@ -32,7 +32,7 @@ RESEARCH_AGENT_PROMPT = """
 
 
 research_agent = Agent(
-    name="Research agent",
+    name="Research Agent",
     instructions=RESEARCH_AGENT_PROMPT,
     tools=[research_tool, simple_report_tool, report_writer_tool],
     model="gpt-4o",

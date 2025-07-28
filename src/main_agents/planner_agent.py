@@ -1,12 +1,13 @@
-from agents import Agent
+from agents import Agent, function_tool
 
 from ..tool_agents.planner.plan_writer_tool import plan_writer_tool
 from ..tool_agents.planner.plan_summarizer_tool import plan_summarizer_tool
 
-PLANNER_AGENT_PROMPT = """
+from ..agent_memory import AGENT_MEMORY
 
+PLANNER_AGENT_PROMPT = """
     You are the Planner Agent in a multi-agent deep research assistant.
-   
+    
     INSTRUCTIONS:
     Your job is to gather detailed information about the user's business or product idea, business context, and specific research interests,
     and generate a research plan which includes an overview of the user's provided context and research areas to be covered.
@@ -28,23 +29,33 @@ PLANNER_AGENT_PROMPT = """
     TOOL USAGE: You MUST use the tools provided for the following tasks:
     - Research Plan creation: use plan_writer_tool EXACTLY ONCE when you have gathered sufficient information from the user
     - Research Plan summary: use plan_summarizer_tool
-    
+
     IMPORTANT: 
     - Only call plan_writer_tool when you have collected ALL of the following information:
-      - Product name
-      - Product description
-      - Target audience
-      - Main competitors
-      - Research focus areas
-      - Business goals
+        - Product name
+        - Product description
+        - Target audience
+        - Main competitors
+        - Research focus areas
+        - Business goals
     - Call plan_writer_tool ONLY ONCE - do not call it multiple times
     - Do NOT call plan_writer_tool until you have gathered this complete information from the user
     - If any information is missing, ask the user for it before calling the tool
-"""
+    """
+
+@function_tool
+async def has_enough_context_state() -> bool:
+    """Get the has enough context state from the session."""
+    return AGENT_MEMORY.get_has_enough_context()
+
+@function_tool
+async def plan_finalized_state() -> bool:
+    """Get the plan finalized state from the session."""
+    return AGENT_MEMORY.get_plan_finalized()
 
 planner_agent = Agent(
-    name="PlannerAgent",
+    name="Planner Agent",
     instructions=PLANNER_AGENT_PROMPT,
-    tools=[plan_writer_tool, plan_summarizer_tool],
+    tools=[has_enough_context_state, plan_finalized_state, plan_writer_tool, plan_summarizer_tool],
     model="gpt-4o-mini",
 )

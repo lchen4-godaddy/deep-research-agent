@@ -1,6 +1,6 @@
 from agents import Agent, Runner, function_tool
 
-from ...globals import CURRENT_SESSION
+from ...agent_memory import AGENT_MEMORY
 
 RESEARCH_REPORT_PROMPT = """
     You are a business analyst creating a comprehensive research report. You will receive research 
@@ -113,14 +113,14 @@ RESEARCH_REPORT_PROMPT = """
 async def report_writer_tool() -> str:
     """Generate a comprehensive research report from research results using session context."""    
     
-    research_report_subagent = Agent(
-        name="ResearchReportSubAgent", 
+    report_writer = Agent(
+        name="Report Writer Tool-Agent", 
         instructions=RESEARCH_REPORT_PROMPT,
         model="gpt-4o-mini",
     )
     # Get research results from session if available
-    research_data = await CURRENT_SESSION.get_tool_output("research_tool")
+    research_data = await AGENT_MEMORY.get_tool_output("research_tool")
         
     # Run the research report sub-agent
-    result = await Runner.run(research_report_subagent, research_data)
+    result = await Runner.run(report_writer, research_data)
     return result.final_output

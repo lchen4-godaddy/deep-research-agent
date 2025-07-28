@@ -1,6 +1,6 @@
 from agents import Agent, Runner, function_tool
 
-from ...globals import CURRENT_SESSION
+from ...agent_memory import AGENT_MEMORY
 
 SIMPLE_REPORT_PROMPT = """
     You are a business analyst creating a quick executive summary. You will receive research 
@@ -40,7 +40,7 @@ async def simple_report_tool() -> str:
     )
 
     # Get research results from session if available
-    research_data = await CURRENT_SESSION.get_tool_output("research_tool")
+    research_data = await AGENT_MEMORY.get_tool_output("research_tool")
 
     # Run the research report sub-agent
     result = await Runner.run(simple_report_subagent, research_data)

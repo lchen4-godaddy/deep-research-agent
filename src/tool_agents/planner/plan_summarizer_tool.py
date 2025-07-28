@@ -1,16 +1,16 @@
 from agents import Agent, Runner, function_tool
 
-from ...globals import CURRENT_SESSION
+from ...agent_memory import AGENT_MEMORY
 
 @function_tool
 async def plan_summarizer_tool() -> str:
     """Summarize the research plan for the user to review."""
     
     # Get the research plan from the session
-    research_plan = await CURRENT_SESSION.get_tool_output("plan_writer_tool")
+    research_plan = await AGENT_MEMORY.get_research_plan()
 
-    summarizer = Agent(
-        name="PlanSummarizerToolAgent",
+    plan_summarizer = Agent(
+        name="Plan Summarizer Tool-Agent",
         instructions="""
         You are a research plan summarizer.
         Create a concise, clear summary of the research plan for the user to review.
@@ -20,7 +20,7 @@ async def plan_summarizer_tool() -> str:
         model="o4-mini",
     )
     
-    summary = await Runner.run(summarizer, str(research_plan))
-    await CURRENT_SESSION.store_tool_output("plan_summarizer_tool", summary.final_output)
+    summary = await Runner.run(plan_summarizer, str(research_plan))
+    await AGENT_MEMORY.set_plan_summary(summary.final_output)
     
     return summary.final_output
