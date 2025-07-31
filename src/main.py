@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-from .manager import Manager
+from src.manager import Manager
 
 
 async def main() -> None:

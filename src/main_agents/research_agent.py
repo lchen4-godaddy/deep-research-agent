@@ -1,8 +1,7 @@
 from agents import Agent
 
-from ..tool_agents.research.research_tool import research_tool
-from ..tool_agents.research.simple_report_tool import simple_report_tool
-from ..tool_agents.research.report_writer_tool import report_writer_tool
+from src.tool_agents.research.research_tool import research_tool
+from src.tool_agents.research.report_writer_tool import report_writer_tool
 
 RESEARCH_AGENT_PROMPT = """
     You are the Research Agent in a multi-agent deep research assistant.
@@ -34,6 +33,6 @@ RESEARCH_AGENT_PROMPT = """
 research_agent = Agent(
     name="Research Agent",
     instructions=RESEARCH_AGENT_PROMPT,
-    tools=[research_tool, simple_report_tool, report_writer_tool],
+    tools=[research_tool, report_writer_tool],
     model="gpt-4o",
 )

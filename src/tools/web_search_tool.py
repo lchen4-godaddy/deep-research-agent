@@ -1,12 +1,12 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from ddgs import DDGS
 import asyncio
 import logging
 
-from src.tools.scraper.simple_scraper import scrape_urls_async
+from src.tools.web_scraper.web_scraper import scrape_url
+from src.tool_agents.research.contextual_summary_tool import contextual_summary_tool
 
 from agents import function_tool
-
 
 def source_finder(query: str) -> List[str]:
     """
@@ -22,83 +22,38 @@ def source_finder(query: str) -> List[str]:
         logging.error(f"Error in source_finder: {str(e)}")
         return []
 
-
-async def web_content_extractor(urls: List[str]) -> Dict[str, str]:
+async def web_search(query: str) -> List[Tuple[str, str]]:
     """
-    Extract content from multiple URLs using Scrapy.
+    Search the web for the most relevant URLs based on the query and return summaries.
+    """
+    urls = source_finder(query)
+    results = []
     
-    Args:
-        urls: List of URLs to extract content from
-        
-    Returns:
-        Dictionary mapping URLs to their extracted content
-    """
-    if not urls:
-        return {}
+    for url in urls:
+        content = scrape_url(url)
+        if content:
+            try:
+                summary = await contextual_summary_tool(query, content)
+                results.append((url, summary))
+            except Exception as e:
+                logging.error(f"Error summarizing content for {url}: {str(e)}")
+                # Fallback to original content if summarization fails
+                results.append((url, content))
+        else:
+            logging.warning(f"Failed to scrape content from {url}")
     
-    try:
-        # Use the Scrapy-based scraper
-        scraped_content = await scrape_urls_async(urls)
-        
-        # Convert the scraped content to the expected format
-        result = {}
-        for url, content_data in scraped_content.items():
-            if isinstance(content_data, dict):
-                # Extract the main content from the scraped data
-                content = content_data.get('content', '')
-                title = content_data.get('title', '')
-                
-                # Combine title and content
-                if title and content:
-                    result[url] = f"Title: {title}\n\nContent: {content}"
-                elif content:
-                    result[url] = content
-                else:
-                    result[url] = "No content extracted"
-            else:
-                result[url] = str(content_data)
-        
-        return result
-        
-    except Exception as e:
-        logging.error(f"Error in web_content_extractor: {str(e)}")
-        return {url: f"Error extracting content: {str(e)}" for url in urls}
-
-async def web_search(query: str) -> Dict[str, str]:
-    """
-    Search the web for information and extract content from relevant URLs.
-    
-    Args:
-        query: The search query
-        
-    Returns:
-        Dictionary mapping URLs to their extracted content
-    """
-    try:
-        # Find relevant URLs
-        urls = source_finder(query)
-        
-        if not urls:
-            return {"error": "No URLs found for the query"}
-        
-        # Extract content from the URLs
-        content = await web_content_extractor(urls)
-        
-        return content
-        
-    except Exception as e:
-        logging.error(f"Error in web_search: {str(e)}")
-        return {"error": f"Error during web search: {str(e)}"}
+    return results
 
 @function_tool
-async def web_search_tool(query: str) -> Dict[str, str]:
+async def web_search_tool(query: str) -> List[Tuple[str, str]]:
     """
-    Tool wrapper for web search functionality.
+    Function tool wrapper for web search functionality.
+    Search the web for the most relevant URLs based on the query and return summaries.
     
     Args:
-        query: The search query
+        query: str - the search query to use
         
     Returns:
-        Dictionary mapping URLs to their extracted content
+        List of tuples containing (URL, summary) pairs
     """
     return await web_search(query)

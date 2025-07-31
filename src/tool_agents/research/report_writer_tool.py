@@ -1,6 +1,6 @@
 from agents import Agent, Runner, function_tool
 
-from ...agent_memory import AGENT_MEMORY
+from src.agent_memory import AGENT_MEMORY
 
 RESEARCH_REPORT_PROMPT = """
     You are a business analyst creating a comprehensive research report. You will receive research 

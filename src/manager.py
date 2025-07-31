@@ -4,8 +4,8 @@ from typing import Any
 
 from agents import Runner
 
-from .main_agents.coordinator_agent import coordinator_agent
-from .agent_memory import AGENT_MEMORY
+from src.main_agents.coordinator_agent import coordinator_agent
+from src.agent_memory import AGENT_MEMORY
 
 class Manager:
 
@@ -57,6 +57,56 @@ class Manager:
                     return str(tool_obj.name)
         
         raise ValueError(f"Tool name not found in event item: {type(event_item)} - {event_item}")
+
+    def _get_tool_arguments(self, event_item: Any, max_length: int = 50) -> str:
+        """Extract tool arguments from event item using concrete type checks.
+        
+        Args:
+            event_item: The event item containing tool call information
+            max_length: Maximum length of arguments to display (default: 50)
+        """
+        # Check if it's a dictionary with 'arguments' key
+        if isinstance(event_item, dict):
+            if 'arguments' in event_item:
+                args = str(event_item['arguments'])
+                return args[:max_length] + "..." if len(args) > max_length else args
+            # Check for nested tool structure
+            for key in ['tool', 'function', 'call']:
+                if key in event_item:
+                    tool_obj = event_item[key]
+                    if isinstance(tool_obj, dict) and 'arguments' in tool_obj:
+                        args = str(tool_obj['arguments'])
+                        return args[:max_length] + "..." if len(args) > max_length else args
+        
+        # Check if it has a raw_item attribute that's a dictionary
+        if hasattr(event_item, 'raw_item'):
+            raw_item = event_item.raw_item
+            if isinstance(raw_item, dict):
+                if 'arguments' in raw_item:
+                    args = str(raw_item['arguments'])
+                    return args[:max_length] + "..." if len(args) > max_length else args
+            # If raw_item is an object with arguments attribute
+            elif not isinstance(raw_item, dict) and hasattr(raw_item, 'arguments'):
+                args = str(raw_item.arguments)
+                return args[:max_length] + "..." if len(args) > max_length else args
+        
+        # Check if the item itself has an arguments attribute
+        if not isinstance(event_item, dict) and hasattr(event_item, 'arguments'):
+            args = str(event_item.arguments)
+            return args[:max_length] + "..." if len(args) > max_length else args
+        
+        # Check for nested object structure
+        for attr_name in ['tool', 'function', 'call']:
+            if not isinstance(event_item, dict) and hasattr(event_item, attr_name):
+                tool_obj = getattr(event_item, attr_name)
+                if isinstance(tool_obj, dict) and 'arguments' in tool_obj:
+                    args = str(tool_obj['arguments'])
+                    return args[:max_length] + "..." if len(args) > max_length else args
+                elif not isinstance(tool_obj, dict) and hasattr(tool_obj, 'arguments'):
+                    args = str(tool_obj.arguments)
+                    return args[:max_length] + "..." if len(args) > max_length else args
+        
+        return "no_args"
 
     def _get_agent_names(self, event_item: Any) -> tuple[str, str]:
         """Extract source and target agent names from handoff event using concrete type checks."""
@@ -154,10 +204,11 @@ class Manager:
                                     # Debug: Show the full event item content (verbose)
                                     # print(f"🔍 DEBUG: tool_called event item: {getattr(event, 'item', 'NO_ITEM')}")
                                     
-                                    # Extract tool name using concrete type checking
+                                    # Extract tool name and arguments using concrete type checking
                                     try:
                                         tool_name = self._get_tool_name(event.item)
-                                        print(f"🔧 Tool Called: {tool_name}")
+                                        tool_args = self._get_tool_arguments(event.item)
+                                        print(f"🔧 Tool Called: {tool_name} (args: {tool_args})")
                                         
                                         # Extract call_id to map with output
                                         tool_item = getattr(event, 'item', None)
