@@ -256,19 +256,35 @@ class Manager:
                 print(f"🔍 Session Conversation History:")
                 session_items = await AGENT_MEMORY.get_items()
                 for i, item in enumerate(session_items[-5:]):  # Show last 5 items
-                    print(f"  {i+1}. {type(item).__name__}: {str(item)[:150]}...")
+                    print(f"  {i+1}. {type(item).__name__}: {str(item)[:300]}...")
                 
-                # Debug: Show stored tool outputs
-                print(f"🔍 Session Stored Tool Outputs:")
-                tool_outputs = await AGENT_MEMORY.get_all_tool_outputs()
-                if tool_outputs:  # Only show if there are tool outputs
-                    for tool_name, data in tool_outputs.items():
-                        print(f"🔧 {tool_name} - {str(data)}...")
-                else:
-                    print(f"🗋 No stored tool outputs")
+                # Debug: Show agent states
+                print(f"🔍 Agent State:")
+                print(f"  has_enough_context: {AGENT_MEMORY.has_enough_context}")
+                print(f"  plan_generated: {AGENT_MEMORY.plan_generated}")
+                print(f"  plan_finalized: {AGENT_MEMORY.plan_finalized}")
+                print(f"  research_finished: {AGENT_MEMORY.research_finished}")
+                print(f"  report_generated: {AGENT_MEMORY.report_generated}")
                 
+                # Debug: Show first 200 characters of stored research plan
+                print(f"🔍 Session Research Plan:")
+                research_plan = await AGENT_MEMORY.get_research_plan()
+                print(f"  {research_plan[:200]}...")
+
+                # Debug: Show first 200 characters of stored research dump
+                print(f"🔍 Session Research Dump:")
+                research_dump = await AGENT_MEMORY.get_research_dump()
+                print(f"  {research_dump[:200]}...")
+
+                # Debug: Show first 200 characters of stored report
+                print(f"🔍 Session Report:")
+                report = await AGENT_MEMORY.get_report()
+                print(f"  {report[:200]}...")
+
                 # Print the final result for completeness
                 print(f"\n✅ Final Agent Output: {result.final_output}")
+
+                
                 
             except KeyboardInterrupt:
                 print("\nGoodbye!")

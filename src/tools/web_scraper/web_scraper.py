@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-from typing import Optional
+from typing import Optional, Tuple
 from urllib.parse import urlparse
 import logging
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class WebScraper:
     """
-    A web scraper that extracts main text content from web pages
+    A web scraper that extracts main text content and titles from web pages
     and separates paragraphs/sections using HTML tags as indicators.
     """
     
@@ -29,15 +29,15 @@ class WebScraper:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         })
     
-    def scrape_url(self, url: str) -> Optional[str]:
+    def scrape_url(self, url: str) -> Optional[Tuple[str, str]]:
         """
-        Scrape the main text content from a URL.
+        Scrape the main text content and title from a URL.
         
         Args:
             url: The URL to scrape
             
         Returns:
-            Extracted text content with paragraphs/sections separated by line breaks,
+            Tuple of (title, content) where content is extracted text with paragraphs/sections separated by line breaks,
             or None if scraping fails
         """
         try:
@@ -53,6 +53,9 @@ class WebScraper:
             # Parse HTML
             soup = BeautifulSoup(response.content, 'html.parser')
             
+            # Extract title
+            title = self._extract_title(soup)
+            
             # Extract main content
             content = self._extract_main_content(soup)
             
@@ -63,7 +66,7 @@ class WebScraper:
             # Clean and format the content
             formatted_content = self._format_content(content)
             
-            return formatted_content
+            return (title, formatted_content)
             
         except requests.RequestException as e:
             logger.error(f"Request failed for URL {url}: {e}")
@@ -71,6 +74,38 @@ class WebScraper:
         except Exception as e:
             logger.error(f"Unexpected error scraping URL {url}: {e}")
             return None
+    
+    def _extract_title(self, soup: BeautifulSoup) -> str:
+        """
+        Extract the page title from the HTML soup.
+        
+        Args:
+            soup: BeautifulSoup object of the HTML
+            
+        Returns:
+            Extracted page title
+        """
+        # Try to get the title from the title tag
+        title_tag = soup.find('title')
+        if title_tag:
+            title = title_tag.get_text(strip=True)
+            if title:
+                return title
+        
+        # Fallback: try to get title from h1 tag
+        h1_tag = soup.find('h1')
+        if h1_tag:
+            title = h1_tag.get_text(strip=True)
+            if title:
+                return title
+        
+        # Fallback: try to get title from og:title meta tag
+        og_title = soup.find('meta', property='og:title')
+        if og_title and og_title.get('content'):
+            return og_title.get('content')
+        
+        # Final fallback: return a generic title
+        return "Untitled Page"
     
     def _is_valid_url(self, url: str) -> bool:
         """
@@ -198,7 +233,7 @@ class WebScraper:
         return False
 
 
-def scrape_url(url: str, timeout: int = 10) -> Optional[str]:
+def scrape_url(url: str, timeout: int = 10) -> Optional[Tuple[str, str]]:
     """
     Convenience function to scrape a URL.
     
@@ -207,7 +242,7 @@ def scrape_url(url: str, timeout: int = 10) -> Optional[str]:
         timeout: Request timeout in seconds
         
     Returns:
-        Extracted text content with paragraphs/sections separated by line breaks,
+        Tuple of (title, content) where content is extracted text with paragraphs/sections separated by line breaks,
         or None if scraping fails
     """
     scraper = WebScraper(timeout=timeout)
@@ -220,7 +255,9 @@ if __name__ == "__main__":
     result = scrape_url(test_url)
     
     if result:
+        title, content = result
+        print(f"Title: {title}")
         print("Scraped content:")
-        print(result)
+        print(content)
     else:
         print("Failed to scrape content") 

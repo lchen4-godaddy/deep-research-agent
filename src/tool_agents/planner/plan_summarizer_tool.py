@@ -7,7 +7,7 @@ async def plan_summarizer_tool() -> str:
     """Summarize the research plan for the user to review."""
     
     # Get the research plan from the session
-    research_plan = await AGENT_MEMORY.get_tool_output("plan_writer_tool")
+    research_plan = await AGENT_MEMORY.get_research_plan()
 
     plan_summarizer = Agent(
         name="Plan Summarizer Tool-Agent",
@@ -21,6 +21,5 @@ async def plan_summarizer_tool() -> str:
     )
     
     summary = await Runner.run(plan_summarizer, str(research_plan))
-    await AGENT_MEMORY.store_tool_output("plan_summarizer_tool", summary.final_output)
     
     return summary.final_output

@@ -5,9 +5,10 @@ from src.tools.web_search_tool import web_search
 
 from src.agent_memory import AGENT_MEMORY
 
-# @function_tool
-async def researcher_tool(research_question: str) -> bool:
-    """Conduct web research using the research plan and the research tools provided.
+
+async def researcher(research_question: str) -> bool:
+    """
+    Conduct web research using the research plan and the research tools provided.
     
     Args:
         research_question: str - the research question to answer
@@ -27,3 +28,17 @@ async def researcher_tool(research_question: str) -> bool:
         return True
     except Exception as e:
         return False
+
+@function_tool
+async def researcher_tool(research_question: str) -> bool:
+    """
+    Function tool wrapper for researcher functionality.
+    Conduct web research using the research plan and the research tools provided.
+    
+    Args:
+        research_question: str - the research question to answer
+        
+    Returns:
+        bool - True if the research was successful, False otherwise
+    """
+    return await researcher(research_question)

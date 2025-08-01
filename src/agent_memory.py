@@ -17,17 +17,18 @@ class AgentMemory:
     
     def __init__(self):
         if not self._initialized:
-            # Session for conversation history - using SQLiteSession directly since tool outputs are now stored in AgentMemory
+            # Session for conversation history
             self.session = SQLiteSession("deep_research_session")
             
-            # Tool outputs stored in local memory
-            self._tool_outputs: Dict[str, Any] = {}
+            # Research plan: String containing the research plan
+            self._research_plan: Optional[str] = None
             
-            # Research dump: Dictionary with [research question, list of (url, summary) tuples]
-            self._research_dump: Dict[str, List[Tuple[str, str]]] = {}
+            # Research dump: Dictionary with [research question, list of ((title, url), summary) tuples]
+            self._research_dump: Dict[str, List[Tuple[Tuple[str, str], str]]] = {}
             
             # Agent state flags
             self.has_enough_context: bool = False
+            self.plan_generated: bool = False
             self.plan_finalized: bool = False
             self.research_finished: bool = False
             self.report_generated: bool = False
@@ -44,33 +45,33 @@ class AgentMemory:
         """Get all items from the session conversation history."""
         return await self.session.get_items()
 
-    # Tool outputs management methods
+    async def clear_session(self) -> None:
+        """Clear the session."""
+        await self.session.clear()
 
-    async def store_tool_output(self, tool_name: str, data: Any) -> None:
-        """Store structured tool output data. Overwrites any previous output from the same tool."""
-        self._tool_outputs[tool_name] = data
-    
-    async def get_tool_output(self, tool_name: str) -> Optional[Any]:
-        """Retrieve structured tool output data."""
-        return self._tool_outputs.get(tool_name)
-    
-    async def get_all_tool_outputs(self) -> Dict[str, Any]:
-        """Get all stored tool outputs."""
-        return self._tool_outputs.copy()
-    
-    async def clear_tool_outputs(self) -> None:
-        """Clear all stored tool outputs."""
-        self._tool_outputs.clear()
+    # Research plan management methods
+
+    async def store_research_plan(self, research_plan: str) -> None:
+        """Store the research plan."""
+        self._research_plan = research_plan
+
+    async def get_research_plan(self) -> Optional[str]:
+        """Get the stored research plan."""
+        return self._research_plan
+
+    async def clear_research_plan(self) -> None:
+        """Clear the research plan."""
+        self._research_plan = None
 
     # Research dump management methods
 
-    async def add_to_research_dump(self, research_question: str, research_data: List[Tuple[str, str]]) -> None:
+    async def add_to_research_dump(self, research_question: str, research_data: List[Tuple[Tuple[str, str], str]]) -> None:
         """Add an entry to the research dump."""
         if research_question not in self._research_dump:
             self._research_dump[research_question] = []
         self._research_dump[research_question].extend(research_data)
 
-    async def get_from_research_dump_by_question(self, research_question: str) -> List[Tuple[str, str]]:
+    async def get_from_research_dump_by_question(self, research_question: str) -> List[Tuple[Tuple[str, str], str]]:
         """Get all entries from the research dump for a given research question."""
         return self._research_dump.get(research_question, [])
     
@@ -86,14 +87,17 @@ class AgentMemory:
         if hasattr(self, state):
             return getattr(self, state)
         else:
-            raise ValueError(f"Unknown state: {state}")
+            # Log the missing state but return False instead of raising an error
+            print(f"Warning: Unknown state '{state}' requested. Returning False.")
+            return False
     
     def set_state(self, state: str, value: bool) -> None:
         """Set any state dynamically."""
         if hasattr(self, state):
             setattr(self, state, value)
         else:
-            raise ValueError(f"Unknown state: {state}")
+            # Log the missing state but don't raise an error
+            print(f"Warning: Unknown state '{state}' cannot be set. State may not be defined in AgentMemory.")
     
 
 # Global instance for easy import

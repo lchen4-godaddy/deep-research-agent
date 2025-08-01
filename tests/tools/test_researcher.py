@@ -4,25 +4,20 @@ Test script for the research tool with a single research question.
 """
 
 import asyncio
-import sys
-import os
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Add the src directory to the path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
-
 from src.agent_memory import AGENT_MEMORY
-from src.tools.researcher_tool import researcher_tool
+from src.tools.researcher_tool import researcher
 
-async def test_research_tool():
+async def test_researcher():
     """Test the research tool with a single research question."""
     
     # Clear any existing data
-    await AGENT_MEMORY.clear_tool_outputs()
     await AGENT_MEMORY.clear_research_dump()
+    await AGENT_MEMORY.clear_research_plan()
     
     # Create a simple research plan with one question
     test_plan = """
@@ -34,7 +29,7 @@ async def test_research_tool():
     """
     
     # Store the plan in agent memory
-    await AGENT_MEMORY.store_tool_output("plan_writer_tool", test_plan)
+    await AGENT_MEMORY.store_research_plan(test_plan)
     
     print("Starting research tool test...")
     print(f"Research plan: {test_plan}")
@@ -43,7 +38,7 @@ async def test_research_tool():
     try:
         # Test the researcher tool with a single research question
         test_question = "What are the latest developments in artificial intelligence in 2024?"
-        result = await researcher_tool(test_question)
+        result = await researcher(test_question)
         
         print("Research tool completed!")
         print(f"Result: {result}")
@@ -53,8 +48,9 @@ async def test_research_tool():
         research_dump = await AGENT_MEMORY.get_from_research_dump_by_question(test_question)
         
         print(f"Research dump entries: {len(research_dump)}")
-        for i, (url, summary) in enumerate(research_dump[:3]):  # Show first 3 entries
+        for i, ((title, url), summary) in enumerate(research_dump[:3]):  # Show first 3 entries
             print(f"Entry {i+1}:")
+            print(f"  Title: {title}")
             print(f"  URL: {url}")
             print(f"  Summary: {summary[:200]}...")  # Truncate long summaries
             print()
@@ -65,4 +61,4 @@ async def test_research_tool():
         traceback.print_exc()
 
 if __name__ == "__main__":
-    asyncio.run(test_research_tool()) 
+    asyncio.run(test_researcher()) 
