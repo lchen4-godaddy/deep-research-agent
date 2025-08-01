@@ -41,7 +41,7 @@ async def contextual_summary_tool(research_question: str, raw_text: str) -> str:
         The summary should be concise and to the point, and should be no more than 200 words long.
         Research question: {research_question}
         """,
-        model="o4-mini",
+        model="gpt-4.1",
     )
     
     try:

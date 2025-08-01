@@ -15,12 +15,12 @@ async def query_writer_tool(research_question: str) -> List[str]:
             You are a search term generator.
             Given a research question, generate 3 search queries to use for web search.
             The search queries should be short phrases with important keywords, and should target the research question.
-            Separate each search query with a new line.
+            Separate each search query with a comma, without any new lines.
             """,
-        model="o4-mini",
+        model="gpt-4.1",
     )
     
     search_queries = await Runner.run(search_query_generator, research_question)
-    queries_list = search_queries.final_output.split("\n")
+    queries_list = search_queries.final_output.split(",")
 
     return queries_list

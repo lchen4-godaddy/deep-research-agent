@@ -17,7 +17,7 @@ async def plan_summarizer_tool() -> str:
             Leave the name and description as is.
             Keep headers and section titles the same, only summarize the sections of developed research questions and ideas.
             """,
-        model="o4-mini",
+        model="gpt-4.1",
     )
     
     summary = await Runner.run(plan_summarizer, str(research_plan))

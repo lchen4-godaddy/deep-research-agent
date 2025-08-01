@@ -188,7 +188,7 @@ class Manager:
                 try:
                     tool_call_map = {}  # Map call_id to tool_name
                     
-                    async with asyncio.timeout(120):  # 2 minute timeout
+                    async with asyncio.timeout(1800):  # 30 minute timeout for research process
                         async for event in result.stream_events():
                             # Skip raw response events to reduce console noise
                             if event.type == "raw_response_event":
@@ -248,8 +248,44 @@ class Manager:
                                 elif event.name == "handoff_requested":
                                     # Show when handoff is requested
                                     print(f"❓ Handoff Requested: {current_agent}")
+                                elif event.name == "function_call":
+                                    # Handle function call events (which might be tool calls)
+                                    try:
+                                        if hasattr(event, 'item') and event.item:
+                                            # Try to extract function name from the event
+                                            if hasattr(event.item, 'name'):
+                                                func_name = event.item.name
+                                                print(f"🔧 Function Called: {func_name}")
+                                            elif hasattr(event.item, 'raw_item') and hasattr(event.item.raw_item, 'name'):
+                                                func_name = event.item.raw_item.name
+                                                print(f"🔧 Function Called: {func_name}")
+                                    except Exception as e:
+                                        print(f"❌ Error extracting function name: {e}")
+                            # Also check for other event types that might contain tool calls
+                            elif event.type == "function_call":
+                                try:
+                                    if hasattr(event, 'name'):
+                                        print(f"🔧 Function Call: {event.name}")
+                                    elif hasattr(event, 'item') and hasattr(event.item, 'name'):
+                                        print(f"🔧 Function Call: {event.item.name}")
+                                except Exception as e:
+                                    print(f"❌ Error extracting function call: {e}")
+                            elif event.type == "tool_call":
+                                try:
+                                    if hasattr(event, 'name'):
+                                        print(f"🔧 Tool Call: {event.name}")
+                                    elif hasattr(event, 'item') and hasattr(event.item, 'name'):
+                                        print(f"🔧 Tool Call: {event.item.name}")
+                                except Exception as e:
+                                    print(f"❌ Error extracting tool call: {e}")
+                            # Add debug logging for all events to understand what's happening
+                            elif event.type in ["sub_agent_call", "sub_agent_tool_called", "sub_agent_message"]:
+                                print(f"🔍 Sub-agent event: {event.type} - {getattr(event, 'name', 'N/A')}")
+                            # Log any other event types we might be missing
+                            elif event.type not in ["raw_response_event"]:
+                                print(f"🔍 Other event: {event.type} - {getattr(event, 'name', 'N/A')}")
                 except asyncio.TimeoutError:
-                    print(f"⏰ Timeout: Agent processing took too long (>2 minutes)")
+                    print(f"⏰ Timeout: Agent processing took too long (>10 minutes)")
                     continue
                 
                 # Debug: Show session memory contents
@@ -263,7 +299,6 @@ class Manager:
                 print(f"  has_enough_context: {AGENT_MEMORY.has_enough_context}")
                 print(f"  plan_generated: {AGENT_MEMORY.plan_generated}")
                 print(f"  plan_finalized: {AGENT_MEMORY.plan_finalized}")
-                print(f"  research_finished: {AGENT_MEMORY.research_finished}")
                 print(f"  report_generated: {AGENT_MEMORY.report_generated}")
                 
                 # Debug: Show first 200 characters of stored research plan
@@ -271,10 +306,11 @@ class Manager:
                 research_plan = await AGENT_MEMORY.get_research_plan()
                 print(f"  {research_plan[:200]}...")
 
-                # Debug: Show first 200 characters of stored research dump
+                # Debug: Show first 400 characters of stored research dump
                 print(f"🔍 Session Research Dump:")
                 research_dump = await AGENT_MEMORY.get_research_dump()
-                print(f"  {research_dump[:200]}...")
+                research_dump_str = str(research_dump)
+                print(f"  {research_dump_str[:400]}...")
 
                 # Debug: Show first 200 characters of stored report
                 print(f"🔍 Session Report:")

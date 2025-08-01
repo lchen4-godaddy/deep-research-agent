@@ -17,16 +17,25 @@ async def researcher(research_question: str) -> bool:
         bool - True if the research was successful, False otherwise
     """
     try:
+        print(f"🔍 Researcher: Starting research for question: {research_question}")
+        
         queries = await query_writer_tool(research_question)
+        print(f"🔍 Researcher: Generated {len(queries)} queries")
+        
         results = []
-        for query in queries:
+        for i, query in enumerate(queries):
+            print(f"🔍 Researcher: Searching query {i+1}: {query}")
             search_results = await web_search(query)
+            print(f"🔍 Researcher: Got {len(search_results)} results for query {i+1}")
             results.extend(search_results)
 
+        print(f"🔍 Researcher: Total results collected: {len(results)}")
         await AGENT_MEMORY.add_to_research_dump(research_question, results)
+        print(f"🔍 Researcher: Added results to research dump for question: {research_question}")
 
         return True
     except Exception as e:
+        print(f"❌ Researcher: Error during research: {e}")
         return False
 
 @function_tool

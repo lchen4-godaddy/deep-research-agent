@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional, List, Tuple
+from typing import Dict, Any, List, Tuple
 from agents import SQLiteSession
 
 class AgentMemory:
@@ -21,16 +21,18 @@ class AgentMemory:
             self.session = SQLiteSession("deep_research_session")
             
             # Research plan: String containing the research plan
-            self._research_plan: Optional[str] = None
+            self._research_plan: str = ""
             
             # Research dump: Dictionary with [research question, list of ((title, url), summary) tuples]
             self._research_dump: Dict[str, List[Tuple[Tuple[str, str], str]]] = {}
+            
+            # Report: String containing the report
+            self._research_report: str = ""
             
             # Agent state flags
             self.has_enough_context: bool = False
             self.plan_generated: bool = False
             self.plan_finalized: bool = False
-            self.research_finished: bool = False
             self.report_generated: bool = False
             
             self._initialized = True
@@ -55,13 +57,13 @@ class AgentMemory:
         """Store the research plan."""
         self._research_plan = research_plan
 
-    async def get_research_plan(self) -> Optional[str]:
+    async def get_research_plan(self) -> str:
         """Get the stored research plan."""
         return self._research_plan
 
     async def clear_research_plan(self) -> None:
         """Clear the research plan."""
-        self._research_plan = None
+        self._research_plan = ""
 
     # Research dump management methods
 
@@ -74,11 +76,28 @@ class AgentMemory:
     async def get_from_research_dump_by_question(self, research_question: str) -> List[Tuple[Tuple[str, str], str]]:
         """Get all entries from the research dump for a given research question."""
         return self._research_dump.get(research_question, [])
+
+    async def get_research_dump(self) -> Dict[str, List[Tuple[Tuple[str, str], str]]]:
+        """Get the research dump."""
+        return self._research_dump
     
     async def clear_research_dump(self) -> None:
         """Clear the research dump."""
         self._research_dump.clear()
-    
+
+    # Report management methods
+
+    async def store_report(self, report: str) -> None:
+        """Store the report."""
+        self._research_report = report
+
+    async def get_report(self) -> str:
+        """Get the report."""
+        return self._research_report
+
+    async def clear_report(self) -> None:
+        """Clear the report."""
+        self._research_report = ""
 
     # State management methods
 

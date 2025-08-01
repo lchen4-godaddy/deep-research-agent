@@ -100,9 +100,9 @@ async def plan_writer_tool() -> bool:
     conversation_history = await AGENT_MEMORY.get_items()
 
     plan_writer = Agent(
-    name="Plan Writer Tool-Agent",
-    instructions=PLAN_WRITER_PROMPT,
-    model="o4-mini",
+        name="Plan Writer Tool-Agent",
+        instructions=PLAN_WRITER_PROMPT,
+        model="gpt-4.1",
     )
     
     # Run the plan_writer agent and save its output to the agent memory
@@ -110,6 +110,6 @@ async def plan_writer_tool() -> bool:
     await AGENT_MEMORY.store_research_plan(research_plan.final_output)
 
     # Set the state plan_generated to True
-    await AGENT_MEMORY.set_state("plan_generated", True)
+    AGENT_MEMORY.set_state("plan_generated", True)
     
     return True
