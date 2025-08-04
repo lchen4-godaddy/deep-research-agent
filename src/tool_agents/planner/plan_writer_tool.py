@@ -2,7 +2,7 @@ from agents import Agent, Runner, function_tool
 
 from src.agent_memory import AGENT_MEMORY
 
-PLAN_WRITER_PROMPT = """
+PLAN_WRITER_PROMPT_SHORT_RESEARCH = """
     You are the Plan Writer, a strategic research planning assistant for the Planner Agent.
 
     OBJECTIVE:
@@ -48,7 +48,7 @@ PLAN_WRITER_PROMPT = """
     Do not generate multiple questions or sub-questions per area.
     """
 
-PLAN_WRITER_PROMPT_LONG_RESEARCH = """
+PLAN_WRITER_PROMPT = """
     You are the Plan Writer, a strategic research planning assistant for the Planner Agent.
 
     OBJECTIVE:

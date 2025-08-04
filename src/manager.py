@@ -278,9 +278,6 @@ class Manager:
                                         print(f"🔧 Tool Call: {event.item.name}")
                                 except Exception as e:
                                     print(f"❌ Error extracting tool call: {e}")
-                            # Add debug logging for all events to understand what's happening
-                            elif event.type in ["sub_agent_call", "sub_agent_tool_called", "sub_agent_message"]:
-                                print(f"🔍 Sub-agent event: {event.type} - {getattr(event, 'name', 'N/A')}")
                             # Log any other event types we might be missing
                             elif event.type not in ["raw_response_event"]:
                                 print(f"🔍 Other event: {event.type} - {getattr(event, 'name', 'N/A')}")
